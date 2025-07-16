@@ -1,0 +1,23 @@
+{
+    "title": "Fresh Air Breathing Visualizer",
+    "description": "A multi-modal breathing guidance tool that uses visual rhythms and ambient sound for focus, relaxation, and stress relief.",
+    "authors": [
+        {
+            "name": "Your Name/Team Name",
+            "email": "your_email@example.com"
+        }
+    ],
+    "version": "1.0.0",
+    "license": "MIT",
+    "keywords": ["breathing", "meditation", "focus", "relaxation", "wellness", "visualization", "pomodoro", "webgl", "audio"],
+    "links": [
+        {
+            "rel": "repository",
+            "href": "https://github.com/your-repo-link/fresh-air"
+        },
+        {
+            "rel": "live_demo",
+            "href": "https://your-live-demo-link.com"
+        }
+    ]
+} 

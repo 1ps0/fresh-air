@@ -1,0 +1,6 @@
+# General
+.DS_Store
+
+# Project specific untracked files
+fresh-air.zip
+fresh-air/ 
