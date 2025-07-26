@@ -67,20 +67,7 @@
             background: rgba(100, 120, 200, 0.8);
         }
 
-        #breathText {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            z-index: 5;
-            pointer-events: none;
-            opacity: 0.8;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            transition: color 0.5s ease;
-        }
+
 
         #patternInfo {
             position: absolute;
@@ -89,6 +76,23 @@
             z-index: 10;
             font-size: 14px;
             opacity: 0.7;
+        }
+
+        #breathText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            z-index: 15;
+            color: rgb(224, 224, 224);
+            text-shadow: 
+                0 0 10px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(0, 0, 0, 0.6),
+                0 0 30px rgba(255, 255, 255, 0.4);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            pointer-events: none;
         }
 
         #peripheralMode {
@@ -200,6 +204,32 @@
             margin: 0 5px;
         }
 
+        input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(100, 100, 100, 0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        input[type="checkbox"]:checked {
+            background: rgba(100, 120, 200, 0.8);
+            border-color: rgba(100, 120, 200, 1);
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: -1px;
+            left: 2px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
         .config-row {
             display: flex;
             align-items: center;
@@ -210,14 +240,16 @@
 
         #minimalExit {
             position: fixed;
-            top: 10px;
-            left: 10px;
+            bottom: 20px;
+            left: 20px;
             z-index: 20;
-            padding: 5px 10px;
+            padding: 8px 15px;
             font-size: 12px;
             display: none;
-            background: rgba(40, 40, 40, 0.8);
+            background: rgba(40, 40, 40, 0.9);
             border: 1px solid rgba(100, 100, 100, 0.3);
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
         }
 
         #infoPanel {
@@ -268,19 +300,45 @@
             fill: #fff;
         }
 
+        #v1Link {
+            position: absolute;
+            top: 55px;
+            left: 20px;
+            z-index: 10;
+            font-size: 11px;
+            color: #aaa;
+            text-decoration: none;
+            background: rgba(20, 20, 20, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(100, 100, 100, 0.2);
+        }
+
+        #v1Link:hover {
+            color: #fff;
+            background: rgba(40, 40, 40, 0.9);
+            border-color: rgba(100, 100, 100, 0.4);
+            transform: translateY(-1px);
+        }
+
         .minimal #controls,
         .minimal #patternInfo,
         .minimal #modeSelector,
         .minimal #stats,
         .minimal #debugPanel,
-        .minimal #pomodoroPanel {
+        .minimal #pomodoroPanel,
+        .minimal #compactPomodoro,
+        .minimal #sidebarControls,
+        .minimal #settingsPanel,
+        .minimal #githubLink,
+        .minimal #v1Link,
+        .minimal #breathText {
             display: none !important;
         }
 
-        .minimal #breathText {
-            font-size: 18px;
-            opacity: 0.5;
-        }
+
 
         .minimal #minimalExit {
             display: block;
@@ -296,12 +354,12 @@
             z-index: 20;
         }
 
-        /* Peripheral edges for better visibility */
+        /* Enhanced peripheral edges that bleed into the page */
         .peripheral-edge {
             position: fixed;
             background: transparent;
             pointer-events: none;
-            z-index: 99;
+            z-index: 2;
             transition: all 0.3s ease;
         }
 
@@ -309,28 +367,246 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
+            height: 20px;
         }
 
         #peripheralBottom {
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 3px;
+            height: 20px;
         }
 
         #peripheralLeft {
             top: 0;
             left: 0;
-            width: 3px;
+            width: 20px;
             height: 100%;
         }
 
         #peripheralRight {
             top: 0;
             right: 0;
-            width: 3px;
+            width: 20px;
             height: 100%;
+        }
+
+        #sidebarControls {
+            position: fixed;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-control {
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 100, 100, 0.2);
+            min-width: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .sidebar-control:hover {
+            background: rgba(40, 40, 40, 0.9);
+            transform: scale(1.05);
+            border-color: rgba(100, 100, 100, 0.4);
+        }
+
+        .sidebar-control.active {
+            background: rgba(100, 120, 200, 0.8);
+            border-color: rgba(100, 120, 200, 1);
+        }
+
+        .sidebar-control.muted {
+            background: rgba(200, 100, 100, 0.8);
+            border-color: rgba(200, 100, 100, 1);
+        }
+
+        .control-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .control-label {
+            font-size: 10px;
+            color: #e0e0e0;
+            opacity: 0.8;
+            white-space: nowrap;
+        }
+
+        #settingsPanel {
+            position: fixed;
+            top: 20px;
+            right: 85px;
+            z-index: 20;
+            background: rgba(20, 20, 20, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(15px);
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 280px;
+        }
+
+        .settings-section h4 {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .settings-section select {
+            width: 100%;
+        }
+
+        .settings-section label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #c0c0c0;
+            cursor: pointer;
+        }
+
+        .settings-section input[type="checkbox"] {
+            margin: 0;
+            accent-color: rgba(100, 120, 200, 0.8);
+        }
+
+        /* Responsive sidebar - hide labels on smaller screens */
+        @media (max-width: 768px) {
+            .control-label {
+                display: none;
+            }
+            
+            .sidebar-control {
+                min-width: 40px;
+                padding: 10px;
+            }
+        }
+
+        #advancedToolsPanel {
+            position: fixed;
+            top: 0;
+            right: -350px; /* Start off-screen */
+            width: 320px;
+            height: 100%;
+            background: rgba(15, 15, 15, 0.95);
+            z-index: 30;
+            backdrop-filter: blur(15px);
+            transition: right 0.4s ease-in-out;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #advancedToolsPanel.visible {
+            right: 0;
+        }
+
+        #advancedToolsPanel h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        #closeToolsPanel {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #centerStage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        #centerStage button.prominent {
+            padding: 15px 35px;
+            font-size: 20px;
+            background: rgba(100, 120, 200, 0.8);
+            border-radius: 50px;
+        }
+
+        #centerStage button.prominent:hover {
+            background: rgba(110, 130, 220, 1);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* Running State */
+        body.running #centerStage {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Keep settings icon available during sessions */
+        body.running #settingsIcon {
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        body.running #settingsIcon:hover {
+            opacity: 1;
+        }
+
+        body.running #patternInfo {
+            opacity: 1; /* Make sure pattern info is visible when running */
+        }
+
+        /* Stop button for running state */
+        #stopBtn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 25;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 10px 20px;
+            font-size: 14px;
+            background: rgba(60, 60, 60, 0.8);
+            border: none;
+            color: #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            min-width: 60px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        #stopBtn:hover {
+            background: rgba(80, 80, 80, 0.9);
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        body.running #stopBtn {
+            opacity: 1;
+            pointer-events: auto;
         }
     </style>
 </head>
@@ -341,80 +617,208 @@
             Fresh Air is a breathing visualizer designed to help you find calm, focus, and relief through guided breathing exercises. 
             Use the controls to select different visual and sound modes, and choose a breathing pattern that suits your needs.
         </p>
+        <div style="margin: 20px 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <input type="checkbox" id="dontShowAgain" checked>
+            <label for="dontShowAgain" style="cursor: pointer; font-size: 14px; color: #c0c0c0;">Don't show this again</label>
+        </div>
         <button id="startApp">Enter</button>
     </div>
 
     <a id="githubLink" href="https://github.com/1ps0/fresh-air" target="_blank" title="View on GitHub">
         <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
     </a>
+    
+    <a id="v1Link" href="https://1ps0.github.io/fresh-air/v1/" target="_blank" title="Try the original version">
+        Back to v1
+    </a>
 
     <canvas id="canvas"></canvas>
+
+    <div id="centerStage">
+        <button id="startStop" class="prominent">Start</button>
+    </div>
+    
+    <button id="stopBtn">Stop</button>
     
     <div id="loadingText">Initializing...</div>
-    <div id="breathText" style="display: none;">READY</div>
+
+    <!-- Sidebar Controls -->
+    <div id="sidebarControls">
+        <!-- Mute Control -->
+        <div class="sidebar-control" id="muteControl" title="Toggle Sound">
+            <div class="control-icon">🔊</div>
+            <div class="control-label">Mute</div>
+    </div>
+
+        <!-- Peripheral Control -->
+        <div class="sidebar-control" id="peripheralControl" title="Peripheral Mode">
+            <div class="control-icon">⭕</div>
+            <div class="control-label">Peripheral</div>
+        </div>
+        
+        <!-- Pomodoro Control -->
+        <div class="sidebar-control" id="pomodoroControl" title="Pomodoro Timer">
+            <div class="control-icon">⏱️</div>
+            <div class="control-label">Pomodoro</div>
+        </div>
+        
+        <!-- Minimal Control -->
+        <div class="sidebar-control" id="minimalControl" title="Minimal Mode">
+            <div class="control-icon">🎯</div>
+            <div class="control-label">Minimal</div>
+        </div>
+        
+        <!-- Settings Control -->
+        <div class="sidebar-control" id="settingsControl" title="More Settings">
+            <div class="control-icon">⚙️</div>
+            <div class="control-label">Settings</div>
+        </div>
+    </div>
+
+    <!-- Expandable Settings Panel -->
+    <div id="settingsPanel">
+        <div class="settings-section">
+            <h4>Visuals</h4>
+            <select id="visualMode">
+                <option value="orb">Orb</option>
+                <option value="wave">Wave</option>
+                <option value="particles">Particles</option>
+                <option value="geometric">Geometric</option>
+                <option value="shader1">Shader: Plasma</option>
+                <option value="shader2">Shader: Ripple</option>
+                <option value="shader3">Shader: Tunnel</option>
+                <option value="shader4">Shader: Fractal</option>
+            </select>
+        </div>
+        
+        <div class="settings-section">
+            <h4>Sound Mode</h4>
+            <select id="soundMode">
+                <option value="sine">Sine Wave</option>
+                <option value="triangle">Triangle Wave</option>
+                <option value="binaural" selected>Binaural Beat</option>
+                <option value="harmonic">Harmonic Series</option>
+                <option value="nature">Nature Sounds</option>
+            </select>
+        </div>
+        
+        <div class="settings-section">
+            <h4>Breathing Pattern</h4>
+            <select id="patternSelect">
+                <option value="0">Regular (2-2) - Basic breathing</option>
+                <option value="1" selected>Flow (4-4) - Deeper rhythm</option>
+                <option value="2">Box (4-4-4-4) - Balanced focus</option>
+                <option value="3">4-7-8 - Calming technique</option>
+                <option value="4">Stress Relief (4-2-6) - Quick calm</option>
+                <option value="5">Energy (6-2-2-2) - Boost alertness</option>
+                <option value="6">ADHD Focus (3-1-3-1) - Attention aid</option>
+                <option value="7">Grief Support (5-7) - Emotional healing</option>
+                <option value="custom">Custom Patterns...</option>
+            </select>
+        </div>
+        
+        <div class="settings-section">
+            <h4>Display</h4>
+            <label>
+                <input type="checkbox" id="breathTextToggle" checked>
+                Show breathing prompts (INHALE/EXHALE/HOLD)
+            </label>
+        </div>
+        
+        <div class="settings-section">
+            <button id="advancedToolsBtn">Advanced Tools</button>
+        </div>
+    </div>
+
+    <div id="advancedToolsPanel">
+        <button id="closeToolsPanel">&times;</button>
+        <h3>Advanced Tools</h3>
+        
+        <div id="pomodoroContainer">
+             <div id="pomodoroPanel">
+                <h3>Pomodoro Timer</h3>
+                <div id="pomodoroTimer">25:00</div>
+                <div class="pomodoro-phase">Work Session</div>
+                <div class="config-row">
+                    <label>Work:</label>
+                    <input type="number" id="workMinutes" value="25" min="1" max="60">
+                    <span>min</span>
+                </div>
+                <div class="config-row">
+                    <label>Break:</label>
+                    <input type="number" id="breakMinutes" value="5" min="1" max="30">
+                    <span>min</span>
+                </div>
+                <div class="config-row">
+                    <label>Long Break:</label>
+                    <input type="number" id="longBreakMinutes" value="15" min="1" max="60">
+                    <span>min</span>
+                </div>
+                <button id="pomodoroStart" style="width: 100%; margin-top: 10px;">Start</button>
+            </div>
+        </div>
+
+        <div class="config-row">
+            <button id="clearUrlBtn" style="width: 100%; background: rgba(120, 80, 80, 0.8); margin-bottom: 10px;">Clear URL Parameters</button>
+        </div>
+
+        <div class="config-row">
+            <label for="showDebugToggle">Show Debug Options</label>
+            <input type="checkbox" id="showDebugToggle">
+        </div>
+        
+        <div id="debugContainer" style="display: none;">
+            <div id="debugPanel">
+                <h3>Debug Panel</h3>
+                <div id="debugLog"></div>
+                <button id="testWebGL" style="width: 100%;">Test WebGL</button>
+                <button id="clearDebug" style="width: 100%; margin-top: 5px;">Clear Log</button>
+                <button id="showWelcome" style="width: 100%; margin-top: 5px;">Show Welcome</button>
+                <button id="testPersistence" style="width: 100%; margin-top: 5px;">Test Persistence</button>
+            </div>
+        </div>
+    </div>
     
     <div id="patternInfo">
-        <div id="currentPattern">Pattern: Regular Breathing (2-2)</div>
+                    <div id="currentPattern">Pattern: Regular Flow (4-4)</div>
         <div id="sessionTime">Session: 0:00</div>
     </div>
     
+    <div id="breathText" style="display: none;">READY</div>
+    
+    <!-- Compact pomodoro display that shows when timer is active -->
+    <div id="compactPomodoro" style="
+        position: absolute;
+        top: 100px;
+        left: 20px;
+        z-index: 10;
+        background: rgba(20, 20, 20, 0.9);
+        padding: 12px;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        display: none;
+        min-width: 120px;
+    ">
+        <div style="font-size: 16px; font-weight: bold; text-align: center;" id="compactPomodoroTimer">25:00</div>
+        <div style="font-size: 10px; text-align: center; opacity: 0.7; margin-top: 2px;" id="compactPomodoroPhase">Work Session</div>
+        <div style="display: flex; gap: 5px; margin-top: 8px;">
+            <button id="compactPomodoroToggle" style="flex: 1; padding: 4px; font-size: 10px;">Pause</button>
+            <button id="compactPomodoroSettings" style="flex: 1; padding: 4px; font-size: 10px;">Settings</button>
+        </div>
+    </div>
+    
     <div id="pomodoroPanel">
-        <h3>Pomodoro Timer</h3>
-        <div id="pomodoroTimer">25:00</div>
-        <div class="pomodoro-phase">Work Session</div>
-        <div class="config-row">
-            <label>Work:</label>
-            <input type="number" id="workMinutes" value="25" min="1" max="60">
-            <span>min</span>
-        </div>
-        <div class="config-row">
-            <label>Break:</label>
-            <input type="number" id="breakMinutes" value="5" min="1" max="30">
-            <span>min</span>
-        </div>
-        <div class="config-row">
-            <label>Long Break:</label>
-            <input type="number" id="longBreakMinutes" value="15" min="1" max="60">
-            <span>min</span>
-        </div>
-        <button id="pomodoroStart" style="width: 100%; margin-top: 10px;">Start</button>
+        <!-- This is now a legacy container, content moved to advanced panel -->
     </div>
     
     <div id="debugPanel">
-        <h3>Debug Panel</h3>
-        <div id="debugLog"></div>
-        <button id="testWebGL" style="width: 100%;">Test WebGL</button>
-        <button id="clearDebug" style="width: 100%; margin-top: 5px;">Clear Log</button>
+        <!-- This is now a legacy container, content moved to advanced panel -->
     </div>
     
     <div id="modeSelector">
-        <select id="visualMode">
-            <option value="orb">Orb</option>
-            <option value="wave">Wave</option>
-            <option value="particles">Particles</option>
-            <option value="geometric">Geometric</option>
-            <option value="shader1">Shader: Plasma</option>
-            <option value="shader2">Shader: Ripple</option>
-            <option value="shader3">Shader: Tunnel</option>
-            <option value="shader4">Shader: Fractal</option>
-        </select>
-        <select id="soundMode">
-            <option value="sine">Sine Wave</option>
-            <option value="triangle">Triangle Wave</option>
-            <option value="binaural">Binaural Beat</option>
-            <option value="harmonic">Harmonic Series</option>
-            <option value="nature">Nature Sounds</option>
-        </select>
     </div>
     
     <div id="controls">
-        <button id="startStop">Start</button>
-        <button id="patternBtn">Pattern</button>
-        <button id="soundBtn">Sound: On</button>
-        <button id="peripheralBtn">Peripheral</button>
-        <button id="minimalBtn">Minimal</button>
-        <button id="pomodoroBtn">Pomodoro</button>
-        <button id="debugBtn">Debug</button>
     </div>
     
     <button id="minimalExit">Exit Minimal</button>
@@ -429,6 +833,57 @@
     <div id="peripheralBottom" class="peripheral-edge"></div>
     <div id="peripheralLeft" class="peripheral-edge"></div>
     <div id="peripheralRight" class="peripheral-edge"></div>
+
+    <!-- Pattern Editor Modal -->
+    <div id="patternEditorModal" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    ">
+        <div style="
+            background: rgba(20, 20, 20, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            backdrop-filter: blur(15px);
+        ">
+            <h3 style="margin-bottom: 15px; color: #e0e0e0;">Edit Breathing Patterns</h3>
+            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">
+                Edit the JSON below to customize patterns. Each pattern needs: name, inhale, hold1, exhale, hold2 (in seconds).
+            </p>
+            <textarea id="patternEditor" style="
+                width: 100%;
+                height: 300px;
+                background: rgba(40, 40, 40, 0.8);
+                border: 1px solid rgba(100, 100, 100, 0.3);
+                color: #e0e0e0;
+                padding: 15px;
+                border-radius: 6px;
+                font-family: 'Courier New', monospace;
+                font-size: 12px;
+                resize: vertical;
+            "></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="resetPatterns" style="background: rgba(80, 60, 60, 0.8);">Reset to Default</button>
+                <button id="cancelPatternEdit">Cancel</button>
+                <button id="savePatterns" style="background: rgba(60, 120, 60, 0.8);">Save Patterns</button>
+            </div>
+            <div id="patternValidationError" style="
+                color: #ff6666;
+                font-size: 12px;
+                margin-top: 10px;
+                display: none;
+            "></div>
+        </div>
+    </div>
 
     <script>
         // Vertex shader for WebGL modes
@@ -581,10 +1036,11 @@
                 isRunning: false,
                 currentPhase: 'inhale',
                 phaseProgress: 0,
-                pattern: { name: 'Regular Breathing', inhale: 2, hold1: 0, exhale: 2, hold2: 0 },
+                pattern: { name: 'Regular Flow', inhale: 4, hold1: 0, exhale: 4, hold2: 0 },
                 visualMode: 'orb',
-                soundMode: 'sine',
+                soundMode: 'binaural',
                 soundEnabled: true,
+                breathTextEnabled: true,
                 peripheralMode: false,
                 minimalMode: false,
                 sessionStart: null,
@@ -598,7 +1054,9 @@
                 pomodoroSessions: 0,
                 workMinutes: 25,
                 breakMinutes: 5,
-                longBreakMinutes: 15
+                longBreakMinutes: 15,
+                lastShaderName: null,
+                persistSession: true
             };
 
             // Color schemes for different phases
@@ -628,7 +1086,7 @@
                 { name: 'ADHD Focus', inhale: 3, hold1: 1, exhale: 3, hold2: 1 },
                 { name: 'Grief Support', inhale: 5, hold1: 0, exhale: 7, hold2: 0 }
             ];
-            let currentPatternIndex = 0;
+            let currentPatternIndex = 1;
 
             // Canvas setup
             const canvas = document.getElementById('canvas');
@@ -652,6 +1110,449 @@
             // Pomodoro timer
             let pomodoroInterval = null;
 
+            // Session persistence functions
+            let saveTimeout = null;
+            let lastSaveData = null;
+            
+            // URL Parameter Management
+            function getUrlParams() {
+                const params = new URLSearchParams(window.location.search);
+                return {
+                    visual: params.get('visual'),
+                    sound: params.get('sound'),
+                    pattern: params.get('pattern'),
+                    breathText: params.get('breathText'),
+                    peripheral: params.get('peripheral'),
+                    muted: params.get('muted'),
+                    workMin: params.get('workMin'),
+                    breakMin: params.get('breakMin'),
+                    longBreakMin: params.get('longBreakMin')
+                };
+            }
+            
+            function setUrlParams(updates) {
+                const url = new URL(window.location);
+                const params = url.searchParams;
+                
+                // Update only provided parameters
+                Object.entries(updates).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined) {
+                        params.set(key, value);
+                    } else {
+                        params.delete(key);
+                    }
+                });
+                
+                // Update URL without page reload
+                window.history.replaceState({}, '', url.toString());
+                debugLog(`URL updated with params: ${url.search}`);
+            }
+            
+            function syncUrlParams() {
+                debugLog('syncUrlParams called');
+                // Define default values
+                const defaults = {
+                    visual: 'orb',
+                    sound: 'binaural', 
+                    pattern: 1, // Regular Flow (4-4)
+                    breathText: true,
+                    peripheral: false,
+                    muted: false,
+                    workMin: 25,
+                    breakMin: 5,
+                    longBreakMin: 15
+                };
+                
+                const updates = {};
+                
+                // Only add parameters that differ from defaults
+                if (state.visualMode !== defaults.visual) {
+                    updates.visual = state.visualMode;
+                }
+                
+                if (state.soundMode !== defaults.sound) {
+                    updates.sound = state.soundMode;
+                }
+                
+                if (currentPatternIndex !== defaults.pattern) {
+                    updates.pattern = currentPatternIndex;
+                }
+                
+                if (state.breathTextEnabled !== defaults.breathText) {
+                    updates.breathText = state.breathTextEnabled ? '1' : '0';
+                }
+                
+                if (state.peripheralMode !== defaults.peripheral) {
+                    updates.peripheral = state.peripheralMode ? '1' : '0';
+                }
+                
+                if (!state.soundEnabled !== defaults.muted) {
+                    updates.muted = !state.soundEnabled ? '1' : '0';
+                }
+                
+                // Add pomodoro settings only if they differ from defaults
+                if (state.pomodoroSettings) {
+                    if (state.pomodoroSettings.workMinutes !== defaults.workMin) {
+                        updates.workMin = state.pomodoroSettings.workMinutes;
+                    }
+                    if (state.pomodoroSettings.breakMinutes !== defaults.breakMin) {
+                        updates.breakMin = state.pomodoroSettings.breakMinutes;
+                    }
+                    if (state.pomodoroSettings.longBreakMinutes !== defaults.longBreakMin) {
+                        updates.longBreakMin = state.pomodoroSettings.longBreakMinutes;
+                    }
+                }
+                
+                debugLog(`URL updates to apply: ${JSON.stringify(updates)}`);
+                setUrlParams(updates);
+            }
+            
+            function clearUrlParams() {
+                // Clear all parameters by setting them to null
+                const updates = {
+                    visual: null,
+                    sound: null,
+                    pattern: null,
+                    breathText: null,
+                    peripheral: null,
+                    muted: null,
+                    workMin: null,
+                    breakMin: null,
+                    longBreakMin: null
+                };
+                
+                setUrlParams(updates);
+                debugLog('URL parameters cleared');
+            }
+            
+            function loadFromUrlParams() {
+                const params = getUrlParams();
+                let urlConfigFound = false;
+                
+                debugLog('Loading configuration from URL parameters...');
+                
+                // Visual mode
+                if (params.visual && ['orb', 'wave', 'particles', 'geometric', 'shader1', 'shader2', 'shader3', 'shader4'].includes(params.visual)) {
+                    state.visualMode = params.visual;
+                    urlConfigFound = true;
+                    debugLog(`URL: Visual mode set to ${params.visual}`);
+                }
+                
+                // Sound mode
+                if (params.sound && ['sine', 'triangle', 'binaural', 'harmonic', 'nature'].includes(params.sound)) {
+                    state.soundMode = params.sound;
+                    urlConfigFound = true;
+                    debugLog(`URL: Sound mode set to ${params.sound}`);
+                }
+                
+                // Pattern
+                if (params.pattern && !isNaN(params.pattern)) {
+                    const patternIndex = parseInt(params.pattern);
+                    if (patternIndex >= 0 && patternIndex < patterns.length) {
+                        currentPatternIndex = patternIndex;
+                        state.pattern = patterns[currentPatternIndex];
+                        urlConfigFound = true;
+                        debugLog(`URL: Pattern set to ${state.pattern.name}`);
+                    }
+                }
+                
+                // Breath text
+                if (params.breathText === '0' || params.breathText === '1') {
+                    state.breathTextEnabled = params.breathText === '1';
+                    urlConfigFound = true;
+                    debugLog(`URL: Breath text ${state.breathTextEnabled ? 'enabled' : 'disabled'}`);
+                }
+                
+                // Peripheral mode
+                if (params.peripheral === '0' || params.peripheral === '1') {
+                    state.peripheralMode = params.peripheral === '1';
+                    urlConfigFound = true;
+                    debugLog(`URL: Peripheral mode ${state.peripheralMode ? 'enabled' : 'disabled'}`);
+                }
+                
+                // Muted state
+                if (params.muted === '0' || params.muted === '1') {
+                    state.soundEnabled = params.muted === '0';
+                    urlConfigFound = true;
+                    debugLog(`URL: Sound ${state.soundEnabled ? 'enabled' : 'muted'}`);
+                }
+                
+                // Pomodoro settings
+                if (params.workMin && !isNaN(params.workMin)) {
+                    const workMin = parseInt(params.workMin);
+                    if (workMin >= 1 && workMin <= 120) {
+                        if (!state.pomodoroSettings) state.pomodoroSettings = {};
+                        state.pomodoroSettings.workMinutes = workMin;
+                        urlConfigFound = true;
+                        debugLog(`URL: Work minutes set to ${workMin}`);
+                    }
+                }
+                
+                if (params.breakMin && !isNaN(params.breakMin)) {
+                    const breakMin = parseInt(params.breakMin);
+                    if (breakMin >= 1 && breakMin <= 60) {
+                        if (!state.pomodoroSettings) state.pomodoroSettings = {};
+                        state.pomodoroSettings.breakMinutes = breakMin;
+                        urlConfigFound = true;
+                        debugLog(`URL: Break minutes set to ${breakMin}`);
+                    }
+                }
+                
+                if (params.longBreakMin && !isNaN(params.longBreakMin)) {
+                    const longBreakMin = parseInt(params.longBreakMin);
+                    if (longBreakMin >= 1 && longBreakMin <= 60) {
+                        if (!state.pomodoroSettings) state.pomodoroSettings = {};
+                        state.pomodoroSettings.longBreakMinutes = longBreakMin;
+                        urlConfigFound = true;
+                        debugLog(`URL: Long break minutes set to ${longBreakMin}`);
+                    }
+                }
+                
+                if (urlConfigFound) {
+                    debugLog('Configuration loaded from URL parameters');
+                    return true;
+                }
+                
+                debugLog('No valid URL parameters found');
+                return false;
+            }
+            
+            function saveSession(immediate = false, syncUrl = true) {
+                // Always sync URL params if requested, even if localStorage persistence is disabled
+                if (syncUrl) {
+                    syncUrlParams();
+                }
+                
+                if (!state.persistSession) {
+                    debugLog('Session save skipped - persistence disabled (URL still synced)');
+                    return;
+                }
+                
+                // Create session data
+                const sessionData = {
+                    isRunning: state.isRunning,
+                    currentPhase: state.currentPhase,
+                    phaseProgress: state.phaseProgress,
+                    sessionStart: state.sessionStart,
+                    breathCount: state.breathCount,
+                    pattern: state.pattern,
+                    currentPatternIndex: currentPatternIndex,
+                    visualMode: state.visualMode,
+                    soundMode: state.soundMode,
+                    soundEnabled: state.soundEnabled,
+                    breathTextEnabled: state.breathTextEnabled,
+                    peripheralMode: state.peripheralMode,
+                    minimalMode: state.minimalMode,
+                    pomodoroMode: state.pomodoroMode,
+                    pomodoroPhase: state.pomodoroPhase,
+                    pomodoroTime: state.pomodoroTime,
+                    pomodoroRunning: state.pomodoroRunning,
+                    pomodoroSessions: state.pomodoroSessions,
+                    workMinutes: state.workMinutes,
+                    breakMinutes: state.breakMinutes,
+                    longBreakMinutes: state.longBreakMinutes,
+                    persistSession: state.persistSession,
+                    timestamp: Date.now()
+                };
+                
+                // Check if data has actually changed to avoid unnecessary writes
+                const dataString = JSON.stringify(sessionData);
+                if (dataString === lastSaveData && !immediate) {
+                    return;
+                }
+                
+                if (immediate) {
+                    // Save immediately
+                    localStorage.setItem('freshAirSession', dataString);
+                    lastSaveData = dataString;
+                    debugLog('Session saved immediately to localStorage');
+                } else {
+                    // Throttle saves to avoid excessive localStorage writes
+                    if (saveTimeout) {
+                        clearTimeout(saveTimeout);
+                    }
+                    
+                                        saveTimeout = setTimeout(() => {
+                        localStorage.setItem('freshAirSession', dataString);
+                        lastSaveData = dataString;
+                        debugLog('Session saved to localStorage (throttled)');
+                        saveTimeout = null;
+                    }, 50); // Save after 50ms of no changes
+                }
+            }
+
+            function loadSession() {
+                try {
+                    debugLog('Attempting to load session...');
+                    const savedData = localStorage.getItem('freshAirSession');
+                    if (!savedData) {
+                        debugLog('No saved session found');
+                        return false;
+                    }
+                    
+                    const sessionData = JSON.parse(savedData);
+                    
+                    // Check if session is less than 24 hours old
+                    const sessionAge = Date.now() - sessionData.timestamp;
+                    if (sessionAge > 24 * 60 * 60 * 1000) {
+                        localStorage.removeItem('freshAirSession');
+                        debugLog('Expired session removed');
+                        return false;
+                    }
+                    
+                    // Only restore if current persistence setting is enabled
+                    if (!state.persistSession) {
+                        debugLog('Session restore skipped - persistence currently disabled');
+                        return false;
+                    }
+                    
+                    // Restore state but preserve current persistence preference
+                    const currentPersistSession = state.persistSession;
+                    debugLog(`Restoring session: isRunning=${sessionData.isRunning}, phase=${sessionData.currentPhase}, breathCount=${sessionData.breathCount}`);
+                    Object.assign(state, sessionData);
+                    state.persistSession = currentPersistSession;
+                    
+                                    // Update UI elements that exist
+                const startStopBtn = document.getElementById('startStop');
+                if (startStopBtn) {
+                    startStopBtn.textContent = state.isRunning ? 'Stop' : 'Start';
+                }
+                                    // These buttons don't exist in current UI - removed to prevent errors
+                    
+                    // Update dropdowns and controls
+                    document.getElementById('visualMode').value = state.visualMode;
+                    document.getElementById('soundMode').value = state.soundMode;
+                    
+                    // Update breath text toggle
+                    const breathTextToggle = document.getElementById('breathTextToggle');
+                    if (breathTextToggle && typeof sessionData.breathTextEnabled !== 'undefined') {
+                        breathTextToggle.checked = state.breathTextEnabled;
+                    }
+                    
+                    // Reinitialize visual mode components
+                    if (state.visualMode === 'particles') {
+                        initParticles();
+                    } else if (state.visualMode.startsWith('shader')) {
+                        // Reset shader state for proper reinitialization
+                        gl = null;
+                        shaderProgram = null;
+                        state.lastShaderName = null;
+                    }
+                    
+                    // Update pattern display and find current pattern index
+                    const patternText = state.pattern.hold1 > 0 || state.pattern.hold2 > 0 ?
+                        `${state.pattern.inhale}-${state.pattern.hold1}-${state.pattern.exhale}-${state.pattern.hold2}` :
+                        `${state.pattern.inhale}-${state.pattern.exhale}`;
+                    document.getElementById('currentPattern').textContent = 
+                        `Pattern: ${state.pattern.name} (${patternText})`;
+                    
+                    // Restore pattern index
+                    if (typeof sessionData.currentPatternIndex !== 'undefined') {
+                        currentPatternIndex = sessionData.currentPatternIndex;
+                    } else {
+                        // Fallback for older saved sessions
+                        currentPatternIndex = patterns.findIndex(p => p.name === state.pattern.name);
+                        if (currentPatternIndex === -1) currentPatternIndex = 0;
+                    }
+                    
+                    // Update pomodoro inputs
+                    document.getElementById('workMinutes').value = state.workMinutes;
+                    document.getElementById('breakMinutes').value = state.breakMinutes;
+                    document.getElementById('longBreakMinutes').value = state.longBreakMinutes;
+                    
+                    // Show/hide panels based on saved state
+                    const peripheralModeElement = document.getElementById('peripheralMode');
+                    if (peripheralModeElement) {
+                        peripheralModeElement.style.display = state.peripheralMode ? 'block' : 'none';
+                    }
+                    
+                    // Update peripheral edges
+                    const edges = ['Top', 'Bottom', 'Left', 'Right'];
+                    edges.forEach(edge => {
+                        const element = document.getElementById(`peripheral${edge}`);
+                        if (element) {
+                        element.style.display = state.peripheralMode ? 'block' : 'none';
+                        }
+                    });
+                    
+                    // Apply minimal mode if it was active
+                    if (state.minimalMode) {
+                        document.body.classList.add('minimal');
+                    }
+                    
+                    // Restart audio if session was running with sound
+                    if (state.isRunning && state.soundEnabled) {
+                        // Small delay to ensure DOM is ready
+                        setTimeout(() => {
+                            try {
+                                initAudio();
+                                debugLog('Audio restarted after session restore');
+                            } catch (e) {
+                                debugLog('Audio restart failed: ' + e.message);
+                            }
+                        }, 100);
+                    }
+                    
+                    // Restart pomodoro if it was running
+                    if (state.pomodoroRunning && !pomodoroInterval) {
+                        pomodoroInterval = setInterval(updatePomodoro, 1000);
+                        document.getElementById('pomodoroStart').textContent = 'Pause';
+                    }
+                    
+                    debugLog('Session restored from localStorage');
+                    return true;
+                } catch (e) {
+                    debugLog('Error loading session: ' + e.message);
+                    localStorage.removeItem('freshAirSession');
+                    return false;
+                }
+            }
+
+            function clearSession() {
+                localStorage.removeItem('freshAirSession');
+                debugLog('Session cleared from localStorage');
+            }
+
+            // Welcome screen preference functions
+            function shouldShowWelcome() {
+                try {
+                    const preference = localStorage.getItem('freshAirShowWelcome');
+                    return preference !== 'false'; // Show by default if not set
+                } catch (e) {
+                    debugLog('Error reading welcome preference: ' + e.message);
+                    return true;
+                }
+            }
+
+            function saveWelcomePreference(show) {
+                try {
+                    localStorage.setItem('freshAirShowWelcome', show.toString());
+                    debugLog(`Welcome screen preference saved: ${show ? 'show' : 'hide'}`);
+                } catch (e) {
+                    debugLog('Error saving welcome preference: ' + e.message);
+                }
+            }
+
+            // Persist preference functions
+            function loadPersistPreference() {
+                try {
+                    const preference = localStorage.getItem('freshAirPersistSession');
+                    return preference !== 'false'; // Default to true if not set
+                } catch (e) {
+                    debugLog('Error reading persist preference: ' + e.message);
+                    return true; // Default to enabled
+                }
+            }
+
+            function savePersistPreference(persist) {
+                try {
+                    localStorage.setItem('freshAirPersistSession', persist.toString());
+                    debugLog(`Persist preference saved: ${persist ? 'enabled' : 'disabled'}`);
+                } catch (e) {
+                    debugLog('Error saving persist preference: ' + e.message);
+                }
+            }
+
             // Initialize WebGL
             function initWebGL() {
                 try {
@@ -660,6 +1561,11 @@
                         debugLog('WebGL not supported');
                         return false;
                     }
+                    
+                    // Set up WebGL clear color to match background
+                    gl.clearColor(0.04, 0.04, 0.04, 1.0);
+                    gl.viewport(0, 0, canvas.width, canvas.height);
+                    
                     debugLog('WebGL initialized successfully');
                     return true;
                 } catch (e) {
@@ -890,13 +1796,38 @@
                 // Update display
                 const minutes = Math.floor(state.pomodoroTime / 60);
                 const seconds = state.pomodoroTime % 60;
-                document.getElementById('pomodoroTimer').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update both timer displays
+            const pomodoroTimer = document.getElementById('pomodoroTimer');
+            const compactTimer = document.getElementById('compactPomodoroTimer');
+            
+            if (pomodoroTimer) {
+                pomodoroTimer.textContent = timeString;
+            }
+            if (compactTimer) {
+                compactTimer.textContent = timeString;
+            }
                 
                 // Update phase display
                 const phaseText = state.pomodoroPhase === 'work' ? 'Work Session' :
                                  state.pomodoroPhase === 'break' ? 'Short Break' : 'Long Break';
-                document.querySelector('.pomodoro-phase').textContent = phaseText;
+            
+            const pomodoroPhase = document.querySelector('.pomodoro-phase');
+            const compactPhase = document.getElementById('compactPomodoroPhase');
+            
+            if (pomodoroPhase) {
+                pomodoroPhase.textContent = phaseText;
+            }
+            if (compactPhase) {
+                compactPhase.textContent = phaseText;
+            }
+            
+            // Show/hide compact display based on running state
+            const compactPomodoro = document.getElementById('compactPomodoro');
+            if (compactPomodoro) {
+                compactPomodoro.style.display = state.pomodoroRunning ? 'block' : 'none';
+            }
             }
 
             // Play notification sound
@@ -929,44 +1860,57 @@
                 }
 
                 if (phaseDuration > 0) {
+                    const oldProgress = state.phaseProgress;
                     state.phaseProgress += deltaTime / (phaseDuration * 1000);
+                    
+                    // Save on significant progress changes (every 10% within a phase)
+                    const oldDecile = Math.floor(oldProgress * 10);
+                    const newDecile = Math.floor(state.phaseProgress * 10);
+                    if (newDecile !== oldDecile && state.persistSession) {
+                        saveSession(); // Throttled save for progress updates
+                    }
                 }
 
                 if (state.phaseProgress >= 1) {
                     state.phaseProgress = 0;
                     
                     // Transition to next phase
+                    let phaseChanged = false;
+                    let breathCountIncreased = false;
+                    
                     switch(phase) {
                         case 'inhale':
                             state.currentPhase = pattern.hold1 > 0 ? 'hold1' : 'exhale';
+                            phaseChanged = true;
                             break;
                         case 'hold1':
                             state.currentPhase = 'exhale';
+                            phaseChanged = true;
                             break;
                         case 'exhale':
                             state.currentPhase = pattern.hold2 > 0 ? 'hold2' : 'inhale';
                             if (state.currentPhase === 'inhale') {
                                 state.breathCount++;
+                                breathCountIncreased = true;
                             }
+                            phaseChanged = true;
                             break;
                         case 'hold2':
                             state.currentPhase = 'inhale';
                             state.breathCount++;
+                            breathCountIncreased = true;
+                            phaseChanged = true;
                             break;
+                    }
+                    
+                    // Save immediately on phase change or breath count increase
+                    if ((phaseChanged || breathCountIncreased) && state.persistSession) {
+                        saveSession(true); // Immediate save for critical state changes
+                        debugLog(`Session saved immediately on ${breathCountIncreased ? 'breath count increase' : 'phase change'} to ${state.currentPhase}`);
                     }
                 }
 
-                // Update breath text with color
-                const breathText = document.getElementById('breathText');
-                const currentColor = phaseColors[state.currentPhase];
-                breathText.style.color = `rgb(${currentColor.rgb})`;
-                
-                switch(state.currentPhase) {
-                    case 'inhale': breathText.textContent = 'INHALE'; break;
-                    case 'hold1': 
-                    case 'hold2': breathText.textContent = 'HOLD'; break;
-                    case 'exhale': breathText.textContent = 'EXHALE'; break;
-                }
+                // Phase updates handled by peripheral indicators
 
                 // Update peripheral indicators
                 if (state.peripheralMode) {
@@ -1030,36 +1974,49 @@
                 }
             }
 
-            // Update peripheral indicators
+            // Update peripheral indicators with enhanced bleeding
             function updatePeripheralIndicators() {
                 const currentColor = phaseColors[state.currentPhase];
                 const breathing = getBreathingValue();
                 
                 // Update corner indicator
                 const peripheralMode = document.getElementById('peripheralMode');
+                if (peripheralMode) {
                 peripheralMode.style.background = `radial-gradient(circle, rgba(${currentColor.rgb}, ${0.3 + breathing * 0.5}), transparent)`;
                 peripheralMode.style.transform = `scale(${0.8 + breathing * 0.4})`;
+                }
                 
-                // Update edge bars
+                // Enhanced edge bleeding with more prominent gradients
                 const edges = ['Top', 'Bottom', 'Left', 'Right'];
                 edges.forEach(edge => {
                     const element = document.getElementById(`peripheral${edge}`);
+                    if (!element) return;
+                    
                     if (state.currentPhase === 'inhale' || state.currentPhase === 'exhale') {
                         const progress = state.currentPhase === 'inhale' ? state.phaseProgress : 1 - state.phaseProgress;
-                        if (edge === 'Top' || edge === 'Bottom') {
-                            element.style.background = `linear-gradient(to right, transparent, rgba(${currentColor.rgb}, ${0.5 + progress * 0.5}), transparent)`;
-                            element.style.height = `${3 + progress * 7}px`;
-                        } else {
-                            element.style.background = `linear-gradient(to bottom, transparent, rgba(${currentColor.rgb}, ${0.5 + progress * 0.5}), transparent)`;
-                            element.style.width = `${3 + progress * 7}px`;
+                        const intensity = 0.3 + progress * 0.4;
+                        
+                        if (edge === 'Top') {
+                            element.style.background = `linear-gradient(to bottom, rgba(${currentColor.rgb}, ${intensity}), rgba(${currentColor.rgb}, ${intensity * 0.3}), transparent)`;
+                        } else if (edge === 'Bottom') {
+                            element.style.background = `linear-gradient(to top, rgba(${currentColor.rgb}, ${intensity}), rgba(${currentColor.rgb}, ${intensity * 0.3}), transparent)`;
+                        } else if (edge === 'Left') {
+                            element.style.background = `linear-gradient(to right, rgba(${currentColor.rgb}, ${intensity}), rgba(${currentColor.rgb}, ${intensity * 0.3}), transparent)`;
+                        } else if (edge === 'Right') {
+                            element.style.background = `linear-gradient(to left, rgba(${currentColor.rgb}, ${intensity}), rgba(${currentColor.rgb}, ${intensity * 0.3}), transparent)`;
                         }
                     } else {
-                        // Hold phases - subtle pulsing
-                        element.style.background = `rgba(${currentColor.rgb}, ${0.3 + Math.sin(Date.now() * 0.003) * 0.2})`;
-                        if (edge === 'Top' || edge === 'Bottom') {
-                            element.style.height = '5px';
-                        } else {
-                            element.style.width = '5px';
+                        // Hold phases - gentle pulsing glow
+                        const pulse = 0.2 + Math.sin(Date.now() * 0.002) * 0.15;
+                        
+                        if (edge === 'Top') {
+                            element.style.background = `linear-gradient(to bottom, rgba(${currentColor.rgb}, ${pulse}), rgba(${currentColor.rgb}, ${pulse * 0.2}), transparent)`;
+                        } else if (edge === 'Bottom') {
+                            element.style.background = `linear-gradient(to top, rgba(${currentColor.rgb}, ${pulse}), rgba(${currentColor.rgb}, ${pulse * 0.2}), transparent)`;
+                        } else if (edge === 'Left') {
+                            element.style.background = `linear-gradient(to right, rgba(${currentColor.rgb}, ${pulse}), rgba(${currentColor.rgb}, ${pulse * 0.2}), transparent)`;
+                        } else if (edge === 'Right') {
+                            element.style.background = `linear-gradient(to left, rgba(${currentColor.rgb}, ${pulse}), rgba(${currentColor.rgb}, ${pulse * 0.2}), transparent)`;
                         }
                     }
                 });
@@ -1269,8 +2226,11 @@
                 
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 
-                const breathing = getBreathingValue();
-                const currentColor = phaseColors[state.currentPhase];
+                // Use running values if session is active, otherwise use defaults for preview
+                const breathing = state.isRunning ? getBreathingValue() : 0.5 + 0.3 * Math.sin(Date.now() * 0.001);
+                const currentColor = state.isRunning ? phaseColors[state.currentPhase] : phaseColors.inhale;
+                const phaseProgress = state.isRunning ? state.phaseProgress : (Math.sin(Date.now() * 0.002) + 1) / 2;
+                const phaseType = state.isRunning ? phaseTypes[state.currentPhase] : 0;
                 
                 // Set uniforms
                 const timeLocation = gl.getUniformLocation(shaderProgram, 'u_time');
@@ -1282,10 +2242,10 @@
                 
                 gl.uniform1f(timeLocation, Date.now() * 0.001);
                 gl.uniform2f(resolutionLocation, width, height);
-                gl.uniform1f(phaseLocation, state.phaseProgress);
+                gl.uniform1f(phaseLocation, phaseProgress);
                 gl.uniform1f(breathingLocation, breathing);
                 gl.uniform3f(colorLocation, currentColor.r, currentColor.g, currentColor.b);
-                gl.uniform1i(phaseTypeLocation, phaseTypes[state.currentPhase]);
+                gl.uniform1i(phaseTypeLocation, phaseType);
                 
                 // Draw
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -1293,26 +2253,41 @@
 
             // Main animation loop
             let lastTime = 0;
+            let lastSaveTime = 0;
             let animationId = null;
             
             function animate(currentTime) {
                 if (!lastTime) lastTime = currentTime;
                 const deltaTime = currentTime - lastTime;
                 lastTime = currentTime;
+
+                // Save session frequently when running for progress updates (every 100ms)
+                if (state.isRunning && state.persistSession && currentTime - lastSaveTime > 100) {
+                    saveSession(); // Use throttled save for frequent progress updates
+                    lastSaveTime = currentTime;
+                }
                 
                 if (state.isRunning) {
                     updateBreathPhase(deltaTime);
+                }
                     
-                    // Draw based on mode
+                // Draw based on mode (always draw, whether running or not)
                     if (state.visualMode.startsWith('shader')) {
                         const shaderType = state.visualMode.replace('shader', '');
                         const shaderName = ['plasma', 'ripple', 'tunnel', 'fractal'][parseInt(shaderType) - 1];
                         
-                        if (!gl && initWebGL()) {
+                        // Initialize WebGL if not already done
+                        if (!gl) {
+                            initWebGL();
+                        }
+                        
+                        // Create or recreate shader program if needed
+                        if (gl && (!shaderProgram || state.lastShaderName !== shaderName)) {
                             shaderProgram = createShaderProgram(shaderSources[shaderName]);
                             if (shaderProgram) {
                                 gl.useProgram(shaderProgram);
                                 setupWebGL();
+                                state.lastShaderName = shaderName;
                             }
                         }
                         
@@ -1327,6 +2302,7 @@
                         if (gl) {
                             gl = null;
                             shaderProgram = null;
+                            state.lastShaderName = null;
                             resize(); // Reinitialize canvas
                         }
                         
@@ -1338,7 +2314,8 @@
                         }
                     }
                     
-                    // Update session time
+                // Update session time and stats only when running
+                if (state.isRunning) {
                     if (state.sessionStart) {
                         const elapsed = Date.now() - state.sessionStart;
                         const minutes = Math.floor(elapsed / 60000);
@@ -1349,9 +2326,61 @@
                     
                     // Update stats
                     document.getElementById('breathCount').textContent = `Breaths: ${state.breathCount}`;
-                } else {
-                    // Draw idle state
-                    if (!gl) {
+                    
+                    // Update breath text with high contrast colors if enabled
+                    const breathText = document.getElementById('breathText');
+                    if (breathText && state.breathTextEnabled) {
+                        breathText.style.display = 'block';
+                        switch(state.currentPhase) {
+                            case 'inhale': 
+                                breathText.textContent = 'INHALE';
+                                breathText.style.color = 'rgb(220, 240, 255)'; // Light blue-white
+                                break;
+                            case 'hold1':
+                            case 'hold2': 
+                                breathText.textContent = 'HOLD';
+                                breathText.style.color = 'rgb(240, 220, 255)'; // Light purple-white
+                                break;
+                            case 'exhale': 
+                                breathText.textContent = 'EXHALE';
+                                breathText.style.color = 'rgb(255, 240, 220)'; // Light orange-white
+                                break;
+                        }
+                    } else if (breathText && !state.breathTextEnabled) {
+                        breathText.style.display = 'none';
+                    }
+                } else if (!state.isRunning) {
+                    // Draw idle/preview state for non-shader modes
+                    if (!gl && state.visualMode !== 'orb') {
+                        // Show a gentle preview animation when not running
+                        ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+                        ctx.fillRect(0, 0, width, height);
+                        
+                        // Temporary override for preview
+                        const originalPhase = state.currentPhase;
+                        const originalProgress = state.phaseProgress;
+                        state.currentPhase = 'inhale';
+                        state.phaseProgress = (Math.sin(Date.now() * 0.001) + 1) / 2;
+                        
+                        // Draw preview based on mode
+                        switch(state.visualMode) {
+                            case 'wave': drawWave(); break;
+                            case 'particles': drawParticles(); break;
+                            case 'geometric': drawGeometric(); break;
+                            default: 
+                                // Default static orb for unknown modes
+                                const radius = Math.min(width, height) * 0.1;
+                                ctx.beginPath();
+                                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                                ctx.fillStyle = 'rgba(100, 150, 255, 0.3)';
+                                ctx.fill();
+                        }
+                        
+                        // Restore original values
+                        state.currentPhase = originalPhase;
+                        state.phaseProgress = originalProgress;
+                    } else if (!gl) {
+                        // Draw idle state for orb mode
                         ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
                         ctx.fillRect(0, 0, width, height);
                         
@@ -1369,90 +2398,240 @@
 
             // Event handlers
             document.getElementById('startApp').addEventListener('click', () => {
+                const dontShowAgain = document.getElementById('dontShowAgain').checked;
+                saveWelcomePreference(!dontShowAgain);
                 document.getElementById('infoPanel').style.display = 'none';
             });
 
-            document.getElementById('startStop').addEventListener('click', () => {
-                state.isRunning = !state.isRunning;
-                const btn = document.getElementById('startStop');
-                btn.textContent = state.isRunning ? 'Stop' : 'Start';
+            function startSession() {
+                state.isRunning = true;
+                document.body.classList.add('running');
+                document.getElementById('startStop').textContent = 'Stop'; // Although it will be hidden
                 
-                if (state.isRunning) {
-                    if (state.soundEnabled) initAudio();
-                    state.sessionStart = Date.now();
-                    state.breathCount = 0;
-                    state.phaseProgress = 0;
-                    state.currentPhase = 'inhale';
-                    debugLog('Session started');
-                } else {
-                    stopAllAudio();
-                    state.sessionStart = null;
-                    document.getElementById('breathText').textContent = 'READY';
-                    document.getElementById('breathText').style.color = 'rgb(224, 224, 224)';
-                    debugLog('Session stopped');
+                if (state.soundEnabled) initAudio();
+                state.sessionStart = Date.now();
+                state.breathCount = 0;
+                state.phaseProgress = 0;
+                state.currentPhase = 'inhale';
+                
+                // Show breath text if enabled
+                const breathText = document.getElementById('breathText');
+                if (breathText && state.breathTextEnabled) {
+                    breathText.style.display = 'block';
+                    breathText.textContent = 'INHALE';
+                    breathText.style.color = 'rgb(220, 240, 255)'; // Light blue-white for contrast
+                }
+                
+                debugLog('Session started');
+                saveSession(true);
+            }
+
+            function stopSession() {
+                state.isRunning = false;
+                document.body.classList.remove('running');
+                document.getElementById('startStop').textContent = 'Start';
+                
+                stopAllAudio();
+                state.sessionStart = null;
+                
+                // Hide breath text
+                const breathText = document.getElementById('breathText');
+                if (breathText) {
+                    breathText.style.display = 'none';
+                    breathText.textContent = 'READY';
+                    breathText.style.color = 'rgb(224, 224, 224)';
+                }
+                
+                debugLog('Session stopped');
+                if (state.persistSession) {
+                    saveSession(true);
+                }
+            }
+
+            document.getElementById('startStop').addEventListener('click', () => {
+                if (!state.isRunning) {
+                    startSession();
                 }
             });
 
-            document.getElementById('patternBtn').addEventListener('click', () => {
-                currentPatternIndex = (currentPatternIndex + 1) % patterns.length;
+            document.getElementById('stopBtn').addEventListener('click', () => {
+                if (state.isRunning) {
+                    stopSession();
+                }
+            });
+
+            // Pattern selection dropdown handler
+            document.getElementById('patternSelect').addEventListener('change', (e) => {
+                if (e.target.value === 'custom') {
+                    openPatternEditor();
+                } else {
+                    currentPatternIndex = parseInt(e.target.value);
                 state.pattern = patterns[currentPatternIndex];
+                    updatePatternDisplay();
+                state.phaseProgress = 0;
+                state.currentPhase = 'inhale';
+                debugLog(`Pattern changed to: ${state.pattern.name}`);
+                saveSession();
+                }
+            });
+
+            // Pattern editor functions
+            function updatePatternDisplay() {
                 const patternText = state.pattern.hold1 > 0 || state.pattern.hold2 > 0 ?
                     `${state.pattern.inhale}-${state.pattern.hold1}-${state.pattern.exhale}-${state.pattern.hold2}` :
                     `${state.pattern.inhale}-${state.pattern.exhale}`;
                 document.getElementById('currentPattern').textContent = 
                     `Pattern: ${state.pattern.name} (${patternText})`;
-                state.phaseProgress = 0;
-                state.currentPhase = 'inhale';
-                debugLog(`Pattern changed to: ${state.pattern.name}`);
-            });
+                
+                // Update dropdown selection
+                document.getElementById('patternSelect').value = currentPatternIndex.toString();
+            }
 
-            document.getElementById('soundBtn').addEventListener('click', () => {
-                state.soundEnabled = !state.soundEnabled;
-                document.getElementById('soundBtn').textContent = `Sound: ${state.soundEnabled ? 'On' : 'Off'}`;
-                if (!state.soundEnabled) {
-                    stopAllAudio();
-                } else if (state.isRunning) {
-                    initAudio();
+            function openPatternEditor() {
+                document.getElementById('patternEditor').value = JSON.stringify(patterns, null, 2);
+                document.getElementById('patternEditorModal').style.display = 'flex';
+                document.getElementById('patternValidationError').style.display = 'none';
+            }
+
+            function closePatternEditor() {
+                document.getElementById('patternEditorModal').style.display = 'none';
+                // Reset dropdown to current pattern
+                document.getElementById('patternSelect').value = currentPatternIndex.toString();
+            }
+
+            function validateAndSavePatterns() {
+                try {
+                    const newPatterns = JSON.parse(document.getElementById('patternEditor').value);
+                    
+                    // Validate structure
+                    if (!Array.isArray(newPatterns)) {
+                        throw new Error('Patterns must be an array');
+                    }
+                    
+                    for (let i = 0; i < newPatterns.length; i++) {
+                        const pattern = newPatterns[i];
+                        if (!pattern.name || typeof pattern.name !== 'string') {
+                            throw new Error(`Pattern ${i + 1}: 'name' must be a string`);
+                        }
+                        if (!Number.isInteger(pattern.inhale) || pattern.inhale < 1) {
+                            throw new Error(`Pattern ${i + 1}: 'inhale' must be a positive integer`);
+                        }
+                        if (!Number.isInteger(pattern.hold1) || pattern.hold1 < 0) {
+                            throw new Error(`Pattern ${i + 1}: 'hold1' must be a non-negative integer`);
+                        }
+                        if (!Number.isInteger(pattern.exhale) || pattern.exhale < 1) {
+                            throw new Error(`Pattern ${i + 1}: 'exhale' must be a positive integer`);
+                        }
+                        if (!Number.isInteger(pattern.hold2) || pattern.hold2 < 0) {
+                            throw new Error(`Pattern ${i + 1}: 'hold2' must be a non-negative integer`);
+                        }
+                    }
+                    
+                    if (newPatterns.length === 0) {
+                        throw new Error('At least one pattern is required');
+                    }
+                    
+                    // Save new patterns
+                    patterns.length = 0;
+                    patterns.push(...newPatterns);
+                    
+                    // Update dropdown options
+                    const patternSelect = document.getElementById('patternSelect');
+                    // Remove all options except the last one (Custom...)
+                    while (patternSelect.options.length > 1) {
+                        patternSelect.removeChild(patternSelect.options[0]);
+                    }
+                    
+                    // Add new pattern options
+                    patterns.forEach((pattern, index) => {
+                        const option = document.createElement('option');
+                        option.value = index.toString();
+                        const patternText = pattern.hold1 > 0 || pattern.hold2 > 0 ?
+                            `${pattern.inhale}-${pattern.hold1}-${pattern.exhale}-${pattern.hold2}` :
+                            `${pattern.inhale}-${pattern.exhale}`;
+                        option.textContent = `${pattern.name} (${patternText})`;
+                        patternSelect.insertBefore(option, patternSelect.lastElementChild);
+                    });
+                    
+                    // Reset to first pattern if current index is out of bounds
+                    if (currentPatternIndex >= patterns.length) {
+                        currentPatternIndex = 0;
+                    }
+                    
+                    state.pattern = patterns[currentPatternIndex];
+                    updatePatternDisplay();
+                    closePatternEditor();
+                    
+                    debugLog(`Patterns updated: ${patterns.length} patterns loaded`);
+                saveSession();
+                    
+                } catch (error) {
+                    document.getElementById('patternValidationError').textContent = 'Error: ' + error.message;
+                    document.getElementById('patternValidationError').style.display = 'block';
                 }
-                debugLog(`Sound ${state.soundEnabled ? 'enabled' : 'disabled'}`);
-            });
+            }
 
-            document.getElementById('peripheralBtn').addEventListener('click', () => {
-                state.peripheralMode = !state.peripheralMode;
-                document.getElementById('peripheralMode').style.display = 
-                    state.peripheralMode ? 'block' : 'none';
-                document.getElementById('peripheralBtn').classList.toggle('active', state.peripheralMode);
+            // Update sidebar control states
+            function updateSidebarStates() {
+                // Mute control
+                const muteControl = document.getElementById('muteControl');
+                if (muteControl) {
+                    const icon = muteControl.querySelector('.control-icon');
+                    if (icon) {
+                        icon.textContent = state.soundEnabled ? '🔊' : '🔇';
+                    }
+                    muteControl.classList.toggle('muted', !state.soundEnabled);
+                }
                 
-                // Show/hide edge indicators
-                const edges = ['Top', 'Bottom', 'Left', 'Right'];
-                edges.forEach(edge => {
-                    const element = document.getElementById(`peripheral${edge}`);
-                    element.style.display = state.peripheralMode ? 'block' : 'none';
-                });
+                // Peripheral control
+                const peripheralControl = document.getElementById('peripheralControl');
+                if (peripheralControl) {
+                    peripheralControl.classList.toggle('active', state.peripheralMode);
+                }
                 
-                debugLog(`Peripheral mode ${state.peripheralMode ? 'enabled' : 'disabled'}`);
+                // Minimal control
+                const minimalControl = document.getElementById('minimalControl');
+                if (minimalControl) {
+                    minimalControl.classList.toggle('active', state.minimalMode);
+                }
+                
+                // Pomodoro control
+                const pomodoroControl = document.getElementById('pomodoroControl');
+                if (pomodoroControl) {
+                    pomodoroControl.classList.toggle('active', state.pomodoroRunning);
+                }
+            }
+
+            // Pattern editor modal handlers
+            document.getElementById('cancelPatternEdit').addEventListener('click', closePatternEditor);
+            document.getElementById('savePatterns').addEventListener('click', validateAndSavePatterns);
+            document.getElementById('resetPatterns').addEventListener('click', () => {
+                document.getElementById('patternEditor').value = JSON.stringify([
+                    { name: 'Regular Breathing', inhale: 2, hold1: 0, exhale: 2, hold2: 0 },
+                    { name: 'Regular Flow', inhale: 4, hold1: 0, exhale: 4, hold2: 0 },
+                    { name: 'Box Breathing', inhale: 4, hold1: 4, exhale: 4, hold2: 4 },
+                    { name: '4-7-8 Calm', inhale: 4, hold1: 7, exhale: 8, hold2: 0 },
+                    { name: 'Stress Relief', inhale: 4, hold1: 2, exhale: 6, hold2: 0 },
+                    { name: 'Energy Boost', inhale: 6, hold1: 2, exhale: 2, hold2: 2 },
+                    { name: 'ADHD Focus', inhale: 3, hold1: 1, exhale: 3, hold2: 1 },
+                    { name: 'Grief Support', inhale: 5, hold1: 0, exhale: 7, hold2: 0 }
+                ], null, 2);
+                document.getElementById('patternValidationError').style.display = 'none';
             });
 
-            document.getElementById('minimalBtn').addEventListener('click', () => {
-                state.minimalMode = true;
-                document.body.classList.add('minimal');
-                document.getElementById('minimalBtn').classList.add('active');
-                debugLog('Minimal mode enabled');
-            });
-
-            document.getElementById('minimalExit').addEventListener('click', () => {
+            // Note: Old control buttons (soundBtn, persistBtn, etc.) removed
+            // Functionality now handled through the Zen settings menu
+            
+            // Minimal mode exit handler
+            const minimalExitBtn = document.getElementById('minimalExit');
+            if (minimalExitBtn) {
+                minimalExitBtn.addEventListener('click', () => {
                 state.minimalMode = false;
                 document.body.classList.remove('minimal');
-                document.getElementById('minimalBtn').classList.remove('active');
                 debugLog('Minimal mode disabled');
+                saveSession();
             });
-
-            document.getElementById('pomodoroBtn').addEventListener('click', () => {
-                state.pomodoroMode = !state.pomodoroMode;
-                document.getElementById('pomodoroPanel').style.display = 
-                    state.pomodoroMode ? 'block' : 'none';
-                document.getElementById('pomodoroBtn').classList.toggle('active', state.pomodoroMode);
-            });
+            }
 
             document.getElementById('pomodoroStart').addEventListener('click', () => {
                 state.pomodoroRunning = !state.pomodoroRunning;
@@ -1465,6 +2644,7 @@
                     clearInterval(pomodoroInterval);
                     pomodoroInterval = null;
                 }
+                saveSession();
             });
 
             // Pomodoro config handlers
@@ -1474,31 +2654,92 @@
                     state.pomodoroTime = state.workMinutes * 60;
                     updatePomodoro();
                 }
+                saveSession();
             });
 
             document.getElementById('breakMinutes').addEventListener('change', (e) => {
                 state.breakMinutes = parseInt(e.target.value);
+                saveSession();
             });
 
             document.getElementById('longBreakMinutes').addEventListener('change', (e) => {
                 state.longBreakMinutes = parseInt(e.target.value);
+                saveSession();
             });
 
-            document.getElementById('debugBtn').addEventListener('click', () => {
-                state.debugMode = !state.debugMode;
-                document.getElementById('debugPanel').style.display = 
-                    state.debugMode ? 'block' : 'none';
-                document.getElementById('debugBtn').classList.toggle('active', state.debugMode);
-            });
+            // Debug mode is now controlled by showDebugToggle checkbox in advanced panel
+            // No standalone debugBtn exists in current UI
 
-            document.getElementById('testWebGL').addEventListener('click', testWebGL);
+            // Debug panel button handlers (with error checking)
+            const testWebGLBtn = document.getElementById('testWebGL');
+            if (testWebGLBtn) {
+                testWebGLBtn.addEventListener('click', testWebGL);
+            }
 
-            document.getElementById('clearDebug').addEventListener('click', () => {
-                document.getElementById('debugLog').innerHTML = '';
+            const clearDebugBtn = document.getElementById('clearDebug');
+            if (clearDebugBtn) {
+                clearDebugBtn.addEventListener('click', () => {
+                    const debugLog = document.getElementById('debugLog');
+                    if (debugLog) {
+                        debugLog.innerHTML = '';
                 debugLog('Log cleared');
-            });
+                    }
+                });
+            }
 
-            document.getElementById('visualMode').addEventListener('change', (e) => {
+            const clearUrlBtn = document.getElementById('clearUrlBtn');
+            if (clearUrlBtn) {
+                clearUrlBtn.addEventListener('click', () => {
+                    clearUrlParams();
+                    debugLog('URL parameters cleared - page shows defaults now');
+                });
+            }
+
+            const showWelcomeBtn = document.getElementById('showWelcome');
+            if (showWelcomeBtn) {
+                showWelcomeBtn.addEventListener('click', () => {
+                    const infoPanel = document.getElementById('infoPanel');
+                    const dontShowAgain = document.getElementById('dontShowAgain');
+                    if (infoPanel) {
+                        infoPanel.style.display = 'block';
+                        if (dontShowAgain) {
+                            dontShowAgain.checked = true;
+                        }
+                debugLog('Welcome screen shown manually');
+                    }
+            });
+            }
+
+            const testPersistenceBtn = document.getElementById('testPersistence');
+            if (testPersistenceBtn) {
+                testPersistenceBtn.addEventListener('click', () => {
+                debugLog('=== PERSISTENCE TEST ===');
+                debugLog(`Persist enabled: ${state.persistSession}`);
+                debugLog(`Session running: ${state.isRunning}`);
+                
+                const savedData = localStorage.getItem('freshAirSession');
+                if (savedData) {
+                    try {
+                        const parsed = JSON.parse(savedData);
+                        debugLog(`Saved data exists: isRunning=${parsed.isRunning}, phase=${parsed.currentPhase}`);
+                        debugLog(`Data age: ${((Date.now() - parsed.timestamp) / 1000).toFixed(1)}s`);
+                    } catch (e) {
+                        debugLog('Saved data is corrupted: ' + e.message);
+                    }
+                } else {
+                    debugLog('No saved data found in localStorage');
+                }
+                
+                debugLog('Attempting manual save...');
+                saveSession();
+                debugLog('=== END TEST ===');
+            });
+            }
+
+            // Visual and sound mode handlers (with error checking)
+            const visualModeSelect = document.getElementById('visualMode');
+            if (visualModeSelect) {
+                visualModeSelect.addEventListener('change', (e) => {
                 state.visualMode = e.target.value;
                 if (state.visualMode === 'particles') {
                     initParticles();
@@ -1506,43 +2747,75 @@
                     // Reinitialize WebGL for shader mode
                     gl = null;
                     shaderProgram = null;
+                    state.lastShaderName = null;
                 }
                 debugLog(`Visual mode changed to: ${state.visualMode}`);
+                saveSession();
             });
+            }
 
-            document.getElementById('soundMode').addEventListener('change', (e) => {
+            const soundModeSelect = document.getElementById('soundMode');
+            if (soundModeSelect) {
+                soundModeSelect.addEventListener('change', (e) => {
                 state.soundMode = e.target.value;
                 if (state.isRunning && state.soundEnabled) {
                     initAudio(); // Reinitialize with new sound mode
                 }
                 debugLog(`Sound mode changed to: ${state.soundMode}`);
+                saveSession();
             });
+            }
+
+            const breathTextToggle = document.getElementById('breathTextToggle');
+            if (breathTextToggle) {
+                breathTextToggle.addEventListener('change', (e) => {
+                    state.breathTextEnabled = e.target.checked;
+                    const breathText = document.getElementById('breathText');
+                    if (breathText) {
+                        if (!state.breathTextEnabled && state.isRunning) {
+                            breathText.style.display = 'none';
+                        } else if (state.breathTextEnabled && state.isRunning) {
+                            breathText.style.display = 'block';
+                        }
+                    }
+                    debugLog(`Breath text ${state.breathTextEnabled ? 'enabled' : 'disabled'}`);
+                    saveSession();
+                });
+            }
 
             // Keyboard controls
             document.addEventListener('keydown', (e) => {
                 switch(e.key) {
                     case ' ':
                         e.preventDefault();
-                        document.getElementById('startStop').click();
-                        break;
-                    case 'p':
-                        document.getElementById('patternBtn').click();
+                        const startStopBtn = document.getElementById('startStop');
+                        if (startStopBtn) startStopBtn.click();
                         break;
                     case 's':
-                        document.getElementById('soundBtn').click();
+                        // Toggle mute
+                        toggleMute();
                         break;
                     case 'm':
-                        if (!state.minimalMode) {
-                            document.getElementById('minimalBtn').click();
-                        } else {
-                            document.getElementById('minimalExit').click();
-                        }
+                        // Toggle minimal mode
+                        toggleMinimal();
+                        break;
+                    case 'p':
+                        // Toggle peripheral mode
+                        togglePeripheral();
                         break;
                     case 'Escape':
                         if (state.minimalMode) {
-                            document.getElementById('minimalExit').click();
+                            const minimalExit = document.getElementById('minimalExit');
+                            if (minimalExit) minimalExit.click();
                         }
                         break;
+                }
+            });
+
+            // Save session before page unload
+            window.addEventListener('beforeunload', () => {
+                if (state.isRunning && state.persistSession) {
+                    saveSession(true); // Immediate save before unload
                 }
             });
 
@@ -1550,17 +2823,277 @@
             window.addEventListener('resize', resize);
             resize();
             
-            // Hide loading text and show breath text
-            document.getElementById('loadingText').style.display = 'none';
-            document.getElementById('breathText').style.display = 'block';
+            // Note: Loading text now hidden at end of initialization after all setup is complete
             
             // Initialize pomodoro display
             updatePomodoro();
             
-            // Start animation loop
+            // Load persist preference
+            state.persistSession = loadPersistPreference();
+            debugLog(`Persist preference loaded: ${state.persistSession ? 'enabled' : 'disabled'}`);
+
+            // Check if welcome screen should be shown
+            if (!shouldShowWelcome()) {
+                document.getElementById('infoPanel').style.display = 'none';
+                debugLog('Welcome screen hidden by user preference');
+            }
+
+            // Start animation loop first
             animate(0);
             
+            // Initialize pattern dropdown
+            updatePatternDisplay();
+            
+            // Initialize pomodoro button text
+            const pomodoroToggleBtn = document.getElementById('pomodoroToggle');
+            if (pomodoroToggleBtn) {
+                pomodoroToggleBtn.textContent = state.pomodoroRunning ? 'Pause Pomodoro' : 'Start Pomodoro';
+            }
+            
+            // Initialize sidebar control states
+            updateSidebarStates();
+            
+            // Hide loading text - moved to end of initialization
+            try {
+                const loadingText = document.getElementById('loadingText');
+                
+                if (loadingText) {
+                    loadingText.style.display = 'none';
+                    debugLog('Loading text hidden at end of initialization');
+                } else {
+                    debugLog('ERROR: loadingText element not found');
+                }
+            } catch (e) {
+                debugLog('Error hiding loading text: ' + e.message);
+            }
+            
+            // Initialize breath text
+            try {
+                const breathText = document.getElementById('breathText');
+                if (breathText) {
+                    breathText.textContent = 'READY';
+                    breathText.style.color = 'rgb(224, 224, 224)';
+                    debugLog('Breath text initialized');
+                }
+            } catch (e) {
+                debugLog('Error initializing breath text: ' + e.message);
+            }
+            
+            // Try to load configuration from URL parameters first, then saved session
+            setTimeout(() => {
+                const urlConfigLoaded = loadFromUrlParams();
+                const sessionRestored = urlConfigLoaded ? false : loadSession(); // Skip localStorage if URL config exists
+                
+                if (urlConfigLoaded || sessionRestored) {
+                    debugLog(urlConfigLoaded ? 'Configuration loaded from URL' : 'Previous session restored');
+                    
+                    // Update UI components after loading configuration
+                    updatePatternDisplay();
+                    updateSidebarStates();
+                    
+                    // Update dropdowns to reflect loaded state
+                    document.getElementById('visualMode').value = state.visualMode;
+                    document.getElementById('soundMode').value = state.soundMode;
+                    document.getElementById('patternSelect').value = currentPatternIndex.toString();
+                    document.getElementById('breathTextToggle').checked = state.breathTextEnabled;
+                    
+                    // Update pomodoro inputs if they exist
+                    if (state.pomodoroSettings) {
+                        const workMinInput = document.getElementById('workMinutes');
+                        const breakMinInput = document.getElementById('breakMinutes');
+                        const longBreakInput = document.getElementById('longBreakMinutes');
+                        
+                        if (workMinInput) workMinInput.value = state.pomodoroSettings.workMinutes || 25;
+                        if (breakMinInput) breakMinInput.value = state.pomodoroSettings.breakMinutes || 5;
+                        if (longBreakInput) longBreakInput.value = state.pomodoroSettings.longBreakMinutes || 15;
+                    }
+                    
+                    // Initialize visual components based on loaded state
+                    if (state.visualMode === 'particles') {
+                        initParticles();
+                    }
+                    
+                    // Sync URL params if loaded from localStorage
+                    if (sessionRestored && !urlConfigLoaded) {
+                        syncUrlParams();
+                    }
+                } else {
+                    // Save current default state (will only sync URL if non-default)
+                    saveSession(false, true); // Allow URL sync for initial state
+                    debugLog('Initial session state saved');
+                }
+            }, 100);
+            
             debugLog('Fresh Air initialized successfully');
+
+            // Sidebar control handlers
+            const muteControl = document.getElementById('muteControl');
+            if (muteControl) {
+                muteControl.addEventListener('click', () => {
+                    toggleMute();
+                });
+            }
+
+            const peripheralControl = document.getElementById('peripheralControl');
+            if (peripheralControl) {
+                peripheralControl.addEventListener('click', () => {
+                    togglePeripheral();
+                });
+            }
+
+            const pomodoroControl = document.getElementById('pomodoroControl');
+            if (pomodoroControl) {
+                pomodoroControl.addEventListener('click', () => {
+                    togglePomodoro();
+                });
+            }
+
+            const minimalControl = document.getElementById('minimalControl');
+            if (minimalControl) {
+                minimalControl.addEventListener('click', () => {
+                    toggleMinimal();
+                });
+            }
+
+            const settingsControl = document.getElementById('settingsControl');
+            const settingsPanel = document.getElementById('settingsPanel');
+            if (settingsControl && settingsPanel) {
+                settingsControl.addEventListener('click', (e) => {
+                    const isVisible = settingsPanel.style.display === 'flex';
+                    settingsPanel.style.display = isVisible ? 'none' : 'flex';
+                    settingsControl.classList.toggle('active', !isVisible);
+                e.stopPropagation();
+            });
+
+                // Close settings panel when clicking outside
+            document.addEventListener('click', (e) => {
+                    if (settingsPanel.style.display === 'flex' && 
+                        !settingsPanel.contains(e.target) && 
+                        !settingsControl.contains(e.target)) {
+                        settingsPanel.style.display = 'none';
+                        settingsControl.classList.remove('active');
+                    }
+                });
+            }
+
+            // Control functions
+            function toggleMute() {
+                state.soundEnabled = !state.soundEnabled;
+                if (!state.soundEnabled) {
+                    stopAllAudio();
+                } else if (state.isRunning) {
+                    initAudio();
+                }
+                updateSidebarStates();
+                debugLog(`Sound ${state.soundEnabled ? 'enabled' : 'disabled'}`);
+                saveSession();
+            }
+
+            function togglePeripheral() {
+                state.peripheralMode = !state.peripheralMode;
+                
+                const peripheralModeElement = document.getElementById('peripheralMode');
+                if (peripheralModeElement) {
+                    peripheralModeElement.style.display = state.peripheralMode ? 'block' : 'none';
+                }
+                
+                const edges = ['Top', 'Bottom', 'Left', 'Right'];
+                edges.forEach(edge => {
+                    const element = document.getElementById(`peripheral${edge}`);
+                    if (element) {
+                        element.style.display = state.peripheralMode ? 'block' : 'none';
+                    }
+                });
+                
+                updateSidebarStates();
+                debugLog(`Peripheral mode ${state.peripheralMode ? 'enabled' : 'disabled'}`);
+                saveSession();
+            }
+
+            function togglePomodoro() {
+                state.pomodoroRunning = !state.pomodoroRunning;
+                
+                const pomodoroStartBtn = document.getElementById('pomodoroStart');
+                if (pomodoroStartBtn) {
+                    pomodoroStartBtn.textContent = state.pomodoroRunning ? 'Pause' : 'Start';
+                }
+                
+                const compactToggleBtn = document.getElementById('compactPomodoroToggle');
+                if (compactToggleBtn) {
+                    compactToggleBtn.textContent = state.pomodoroRunning ? 'Pause' : 'Start';
+                }
+                
+                if (state.pomodoroRunning && !pomodoroInterval) {
+                    pomodoroInterval = setInterval(updatePomodoro, 1000);
+                } else {
+                    clearInterval(pomodoroInterval);
+                    pomodoroInterval = null;
+                }
+                
+                updatePomodoro();
+                updateSidebarStates();
+                debugLog(`Pomodoro ${state.pomodoroRunning ? 'started' : 'paused'}`);
+                saveSession();
+            }
+
+            function toggleMinimal() {
+                state.minimalMode = !state.minimalMode;
+                
+                if (state.minimalMode) {
+                    document.body.classList.add('minimal');
+                } else {
+                    document.body.classList.remove('minimal');
+                }
+                
+                updateSidebarStates();
+                debugLog(`Minimal mode ${state.minimalMode ? 'enabled' : 'disabled'}`);
+                saveSession();
+            }
+
+            // Advanced tools handlers (with error checking)
+            const advancedToolsBtn = document.getElementById('advancedToolsBtn');
+            const advancedToolsPanel = document.getElementById('advancedToolsPanel');
+            const closeToolsPanel = document.getElementById('closeToolsPanel');
+            
+            if (advancedToolsBtn && advancedToolsPanel) {
+                advancedToolsBtn.addEventListener('click', () => {
+                    advancedToolsPanel.classList.add('visible');
+                    if (settingsPanel) {
+                        settingsPanel.style.display = 'none';
+                        settingsControl.classList.remove('active');
+                    }
+                });
+            }
+            
+            if (closeToolsPanel && advancedToolsPanel) {
+                closeToolsPanel.addEventListener('click', () => {
+                    advancedToolsPanel.classList.remove('visible');
+                });
+            }
+
+            const showDebugToggle = document.getElementById('showDebugToggle');
+                const debugContainer = document.getElementById('debugContainer');
+            
+            if (showDebugToggle && debugContainer) {
+                showDebugToggle.addEventListener('change', (e) => {
+                debugContainer.style.display = e.target.checked ? 'block' : 'none';
+            });
+            }
+
+            // Compact pomodoro controls
+            const compactPomodoroToggle = document.getElementById('compactPomodoroToggle');
+            if (compactPomodoroToggle) {
+                compactPomodoroToggle.addEventListener('click', togglePomodoro);
+            }
+
+            const compactPomodoroSettings = document.getElementById('compactPomodoroSettings');
+            if (compactPomodoroSettings) {
+                compactPomodoroSettings.addEventListener('click', () => {
+                    if (advancedToolsPanel) {
+                        advancedToolsPanel.classList.add('visible');
+                    }
+                });
+            }
         });
     </script>
 </body>

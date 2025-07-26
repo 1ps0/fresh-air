@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Air - Breathing Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 15px;
+            background: rgba(20, 20, 20, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            max-width: 90%;
+            justify-content: center;
+        }
+
+        button {
+            background: rgba(60, 60, 60, 0.8);
+            border: none;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: rgba(80, 80, 80, 0.9);
+            transform: translateY(-2px);
+        }
+
+        button.active {
+            background: rgba(100, 120, 200, 0.8);
+        }
+
+        #breathText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0.8;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: color 0.5s ease;
+        }
+
+        #patternInfo {
+            position: absolute;
+            top: 20px;
+            left: 60px;
+            z-index: 10;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        #peripheralMode {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            z-index: 100;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        #modeSelector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        select {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(100, 100, 100, 0.3);
+            color: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            font-size: 12px;
+            opacity: 0.6;
+            text-align: right;
+        }
+
+        #debugPanel {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            z-index: 15;
+            background: rgba(20, 20, 20, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        #debugPanel h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        #debugLog {
+            font-size: 11px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        #pomodoroPanel {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        #pomodoroPanel h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        #pomodoroTimer {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .pomodoro-phase {
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        input[type="number"] {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(100, 100, 100, 0.3);
+            color: #e0e0e0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            width: 60px;
+            margin: 0 5px;
+        }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        #minimalExit {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 20;
+            padding: 5px 10px;
+            font-size: 12px;
+            display: none;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(100, 100, 100, 0.3);
+        }
+
+        #infoPanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            background: rgba(20, 20, 20, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        #infoPanel h2 {
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+
+        #infoPanel p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #c0c0c0;
+        }
+
+        #infoPanel button {
+            background: rgba(100, 120, 200, 0.8);
+        }
+        
+        #githubLink {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        #githubLink svg {
+            width: 24px;
+            height: 24px;
+            fill: #e0e0e0;
+            transition: fill 0.3s;
+        }
+
+        #githubLink:hover svg {
+            fill: #fff;
+        }
+
+        #v2Link {
+            position: absolute;
+            top: 55px;
+            left: 20px;
+            z-index: 10;
+            font-size: 11px;
+            color: #aaa;
+            text-decoration: none;
+            background: rgba(20, 20, 20, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(100, 100, 100, 0.2);
+        }
+
+        #v2Link:hover {
+            color: #fff;
+            background: rgba(40, 40, 40, 0.9);
+            border-color: rgba(100, 100, 100, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .minimal #controls,
+        .minimal #patternInfo,
+        .minimal #modeSelector,
+        .minimal #stats,
+        .minimal #debugPanel,
+        .minimal #pomodoroPanel,
+        .minimal #githubLink,
+        .minimal #v2Link {
+            display: none !important;
+        }
+
+        .minimal #breathText {
+            font-size: 18px;
+            opacity: 0.5;
+        }
+
+        .minimal #minimalExit {
+            display: block;
+        }
+
+        #loadingText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            opacity: 0.6;
+            z-index: 20;
+        }
+
+        /* Peripheral edges for better visibility */
+        .peripheral-edge {
+            position: fixed;
+            background: transparent;
+            pointer-events: none;
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+
+        #peripheralTop {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+
+        #peripheralBottom {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+
+        #peripheralLeft {
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+        }
+
+        #peripheralRight {
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="infoPanel">
+        <h2>Welcome to Fresh Air</h2>
+        <p>
+            Fresh Air is a breathing visualizer designed to help you find calm, focus, and relief through guided breathing exercises. 
+            Use the controls to select different visual and sound modes, and choose a breathing pattern that suits your needs.
+        </p>
+        <button id="startApp">Enter</button>
+    </div>
+
+    <a id="githubLink" href="https://github.com/1ps0/fresh-air" target="_blank" title="View on GitHub">
+        <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+    </a>
+    
+    <a id="v2Link" href="https://1ps0.github.io/fresh-air/" target="_blank" title="Try the new version">
+        To v2
+    </a>
+
+    <canvas id="canvas"></canvas>
+    
+    <div id="loadingText">Initializing...</div>
+    <div id="breathText" style="display: none;">READY</div>
+    
+    <div id="patternInfo">
+        <div id="currentPattern">Pattern: Regular Breathing (2-2)</div>
+        <div id="sessionTime">Session: 0:00</div>
+    </div>
+    
+    <div id="pomodoroPanel">
+        <h3>Pomodoro Timer</h3>
+        <div id="pomodoroTimer">25:00</div>
+        <div class="pomodoro-phase">Work Session</div>
+        <div class="config-row">
+            <label>Work:</label>
+            <input type="number" id="workMinutes" value="25" min="1" max="60">
+            <span>min</span>
+        </div>
+        <div class="config-row">
+            <label>Break:</label>
+            <input type="number" id="breakMinutes" value="5" min="1" max="30">
+            <span>min</span>
+        </div>
+        <div class="config-row">
+            <label>Long Break:</label>
+            <input type="number" id="longBreakMinutes" value="15" min="1" max="60">
+            <span>min</span>
+        </div>
+        <button id="pomodoroStart" style="width: 100%; margin-top: 10px;">Start</button>
+    </div>
+    
+    <div id="debugPanel">
+        <h3>Debug Panel</h3>
+        <div id="debugLog"></div>
+        <button id="testWebGL" style="width: 100%;">Test WebGL</button>
+        <button id="clearDebug" style="width: 100%; margin-top: 5px;">Clear Log</button>
+    </div>
+    
+    <div id="modeSelector">
+        <select id="visualMode">
+            <option value="orb">Orb</option>
+            <option value="wave">Wave</option>
+            <option value="particles">Particles</option>
+            <option value="geometric">Geometric</option>
+            <option value="shader1">Shader: Plasma</option>
+            <option value="shader2">Shader: Ripple</option>
+            <option value="shader3">Shader: Tunnel</option>
+            <option value="shader4">Shader: Fractal</option>
+        </select>
+        <select id="soundMode">
+            <option value="sine">Sine Wave</option>
+            <option value="triangle">Triangle Wave</option>
+            <option value="binaural">Binaural Beat</option>
+            <option value="harmonic">Harmonic Series</option>
+            <option value="nature">Nature Sounds</option>
+        </select>
+    </div>
+    
+    <div id="controls">
+        <button id="startStop">Start</button>
+        <button id="patternBtn">Pattern</button>
+        <button id="soundBtn">Sound: On</button>
+        <button id="peripheralBtn">Peripheral</button>
+        <button id="minimalBtn">Minimal</button>
+        <button id="pomodoroBtn">Pomodoro</button>
+        <button id="debugBtn">Debug</button>
+    </div>
+    
+    <button id="minimalExit">Exit Minimal</button>
+    
+    <div id="stats">
+        <div id="breathCount">Breaths: 0</div>
+        <div id="avgRhythm">Rhythm: --</div>
+    </div>
+    
+    <div id="peripheralMode"></div>
+    <div id="peripheralTop" class="peripheral-edge"></div>
+    <div id="peripheralBottom" class="peripheral-edge"></div>
+    <div id="peripheralLeft" class="peripheral-edge"></div>
+    <div id="peripheralRight" class="peripheral-edge"></div>
+
+    <script>
+        // Vertex shader for WebGL modes
+        const vertexShaderSource = `
+            attribute vec2 a_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        // Fragment shaders with phase-aware coloring
+        const shaderSources = {
+            plasma: `
+                precision mediump float;
+                uniform float u_time;
+                uniform vec2 u_resolution;
+                uniform float u_phase;
+                uniform float u_breathing;
+                uniform vec3 u_color;
+                uniform int u_phaseType;
+                
+                void main() {
+                    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                    vec2 center = vec2(0.5, 0.5);
+                    float dist = distance(uv, center);
+                    
+                    float speed = 2.0;
+                    if (u_phaseType == 1 || u_phaseType == 3) speed = 0.5; // Slower during holds
+                    
+                    float plasma = sin(dist * 10.0 - u_time * speed + u_phase * 6.28);
+                    plasma += sin(uv.x * 15.0 + u_time * speed * 0.75);
+                    plasma += sin(uv.y * 10.0 - u_time * speed * 1.25);
+                    plasma *= 0.5;
+                    
+                    float breathing = 0.5 + u_breathing * 0.5;
+                    vec3 color = u_color * (0.5 + plasma * 0.5) * breathing;
+                    
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            ripple: `
+                precision mediump float;
+                uniform float u_time;
+                uniform vec2 u_resolution;
+                uniform float u_phase;
+                uniform float u_breathing;
+                uniform vec3 u_color;
+                uniform int u_phaseType;
+                
+                void main() {
+                    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                    vec2 center = vec2(0.5, 0.5);
+                    float dist = distance(uv, center);
+                    
+                    float speed = 3.0;
+                    if (u_phaseType == 0) speed = 4.0; // Faster on inhale
+                    if (u_phaseType == 2) speed = -4.0; // Reverse on exhale
+                    if (u_phaseType == 1 || u_phaseType == 3) speed = 1.0; // Gentle during holds
+                    
+                    float ripple = sin(dist * 30.0 - u_time * speed + u_phase * 6.28);
+                    ripple *= exp(-dist * 3.0 * (1.0 - u_breathing));
+                    
+                    vec3 color = u_color * (0.5 + ripple * 0.5);
+                    color *= 1.0 - dist * 0.5;
+                    
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            tunnel: `
+                precision mediump float;
+                uniform float u_time;
+                uniform vec2 u_resolution;
+                uniform float u_phase;
+                uniform float u_breathing;
+                uniform vec3 u_color;
+                uniform int u_phaseType;
+                
+                void main() {
+                    vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y;
+                    float angle = atan(uv.y, uv.x);
+                    float radius = length(uv);
+                    
+                    float rotation = u_time * 2.0;
+                    if (u_phaseType == 0) rotation *= 1.5; // Faster on inhale
+                    if (u_phaseType == 2) rotation *= -1.5; // Reverse on exhale
+                    if (u_phaseType == 1 || u_phaseType == 3) rotation *= 0.3; // Slow during holds
+                    
+                    float tunnel = 1.0 / (radius + 0.1);
+                    tunnel *= sin(angle * 5.0 + rotation + u_phase * 6.28);
+                    tunnel *= sin(radius * 10.0 - u_time * 3.0);
+                    
+                    vec3 color = u_color * tunnel * u_breathing;
+                    color *= exp(-radius * 2.0);
+                    
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+            fractal: `
+                precision mediump float;
+                uniform float u_time;
+                uniform vec2 u_resolution;
+                uniform float u_phase;
+                uniform float u_breathing;
+                uniform vec3 u_color;
+                uniform int u_phaseType;
+                
+                void main() {
+                    vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y;
+                    
+                    float zoom = 2.0 + sin(u_time * 0.5) * 0.5 * u_breathing;
+                    if (u_phaseType == 0) zoom *= 0.8; // Zoom in on inhale
+                    if (u_phaseType == 2) zoom *= 1.2; // Zoom out on exhale
+                    
+                    uv *= zoom;
+                    
+                    vec2 z = uv;
+                    float iter = 0.0;
+                    
+                    for (int i = 0; i < 20; i++) {
+                        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + uv;
+                        if (length(z) > 2.0) break;
+                        iter += 1.0;
+                    }
+                    
+                    float color_val = iter / 20.0;
+                    vec3 color = u_color * color_val * u_breathing;
+                    
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `
+        };
+
+        // Debug logging function
+        function debugLog(message) {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.textContent = `[${timestamp}] ${message}`;
+            debugLog.appendChild(entry);
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(`Fresh Air: ${message}`);
+        }
+
+        // Wait for DOM to load
+        window.addEventListener('DOMContentLoaded', () => {
+            debugLog('Initializing...');
+            
+            // State management
+            const state = {
+                isRunning: false,
+                currentPhase: 'inhale',
+                phaseProgress: 0,
+                pattern: { name: 'Regular Breathing', inhale: 2, hold1: 0, exhale: 2, hold2: 0 },
+                visualMode: 'orb',
+                soundMode: 'sine',
+                soundEnabled: true,
+                peripheralMode: false,
+                minimalMode: false,
+                sessionStart: null,
+                breathCount: 0,
+                lastBreathTime: Date.now(),
+                debugMode: false,
+                pomodoroMode: false,
+                pomodoroPhase: 'work',
+                pomodoroTime: 25 * 60,
+                pomodoroRunning: false,
+                pomodoroSessions: 0,
+                workMinutes: 25,
+                breakMinutes: 5,
+                longBreakMinutes: 15
+            };
+
+            // Color schemes for different phases
+            const phaseColors = {
+                inhale: { r: 0.4, g: 0.6, b: 1.0, rgb: '100, 150, 255' },
+                hold1: { r: 0.6, g: 0.4, b: 1.0, rgb: '150, 100, 255' },
+                exhale: { r: 1.0, g: 0.6, b: 0.4, rgb: '255, 150, 100' },
+                hold2: { r: 0.6, g: 1.0, b: 0.4, rgb: '150, 255, 100' }
+            };
+
+            // Phase type mapping for shaders
+            const phaseTypes = {
+                inhale: 0,
+                hold1: 1,
+                exhale: 2,
+                hold2: 3
+            };
+
+            // Available patterns
+            const patterns = [
+                { name: 'Regular Breathing', inhale: 2, hold1: 0, exhale: 2, hold2: 0 },
+                { name: 'Regular Flow', inhale: 4, hold1: 0, exhale: 4, hold2: 0 },
+                { name: 'Box Breathing', inhale: 4, hold1: 4, exhale: 4, hold2: 4 },
+                { name: '4-7-8 Calm', inhale: 4, hold1: 7, exhale: 8, hold2: 0 },
+                { name: 'Stress Relief', inhale: 4, hold1: 2, exhale: 6, hold2: 0 },
+                { name: 'Energy Boost', inhale: 6, hold1: 2, exhale: 2, hold2: 2 },
+                { name: 'ADHD Focus', inhale: 3, hold1: 1, exhale: 3, hold2: 1 },
+                { name: 'Grief Support', inhale: 5, hold1: 0, exhale: 7, hold2: 0 }
+            ];
+            let currentPatternIndex = 0;
+
+            // Canvas setup
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            let gl = null;
+            let shaderProgram = null;
+            let width, height, centerX, centerY;
+
+            // Audio context
+            let audioContext = null;
+            let oscillator = null;
+            let oscillator2 = null;
+            let gainNode = null;
+            let noiseBuffer = null;
+            let noiseSource = null;
+
+            // Particles for particle mode
+            const particles = [];
+            const particleCount = 100;
+
+            // Pomodoro timer
+            let pomodoroInterval = null;
+
+            // Initialize WebGL
+            function initWebGL() {
+                try {
+                    gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (!gl) {
+                        debugLog('WebGL not supported');
+                        return false;
+                    }
+                    debugLog('WebGL initialized successfully');
+                    return true;
+                } catch (e) {
+                    debugLog('WebGL initialization error: ' + e.message);
+                    return false;
+                }
+            }
+
+            // Test WebGL compatibility
+            function testWebGL() {
+                const testCanvas = document.createElement('canvas');
+                const testGl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+                
+                if (testGl) {
+                    alert('WebGL is supported! You can use shader modes.');
+                    debugLog('WebGL test passed');
+                } else {
+                    alert('WebGL is not supported on this device/browser. Regular visualizations will work fine.');
+                    debugLog('WebGL test failed');
+                }
+            }
+
+            // Compile shader
+            function compileShader(source, type) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    debugLog('Shader compilation error: ' + gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            // Create shader program
+            function createShaderProgram(fragmentSource) {
+                const vertexShader = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
+                const fragmentShader = compileShader(fragmentSource, gl.FRAGMENT_SHADER);
+                
+                if (!vertexShader || !fragmentShader) return null;
+                
+                const program = gl.createProgram();
+                gl.attachShader(program, vertexShader);
+                gl.attachShader(program, fragmentShader);
+                gl.linkProgram(program);
+                
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    debugLog('Program linking error: ' + gl.getProgramInfoLog(program));
+                    return null;
+                }
+                
+                return program;
+            }
+
+            // Setup WebGL buffers
+            function setupWebGL() {
+                const vertices = new Float32Array([
+                    -1, -1,
+                     1, -1,
+                    -1,  1,
+                     1,  1
+                ]);
+                
+                const buffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+                
+                const positionLocation = gl.getAttribLocation(shaderProgram, 'a_position');
+                gl.enableVertexAttribArray(positionLocation);
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            }
+
+            // Initialize particles
+            function initParticles() {
+                particles.length = 0;
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: (Math.random() - 0.5) * 2,
+                        size: Math.random() * 3 + 1,
+                        opacity: Math.random() * 0.5 + 0.5
+                    });
+                }
+            }
+
+            // Create white noise buffer
+            function createNoiseBuffer() {
+                const bufferSize = audioContext.sampleRate * 2;
+                const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                
+                return buffer;
+            }
+
+            // Resize handler
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                centerX = width / 2;
+                centerY = height / 2;
+                
+                if (gl) {
+                    gl.viewport(0, 0, width, height);
+                }
+                
+                if (state.visualMode === 'particles') {
+                    initParticles();
+                }
+            }
+
+            // Stop all audio
+            function stopAllAudio() {
+                if (oscillator) {
+                    try {
+                        oscillator.stop();
+                        oscillator.disconnect();
+                    } catch (e) {}
+                    oscillator = null;
+                }
+                if (oscillator2) {
+                    try {
+                        oscillator2.stop();
+                        oscillator2.disconnect();
+                    } catch (e) {}
+                    oscillator2 = null;
+                }
+                if (noiseSource) {
+                    try {
+                        noiseSource.stop();
+                        noiseSource.disconnect();
+                    } catch (e) {}
+                    noiseSource = null;
+                }
+                if (gainNode) {
+                    gainNode.gain.value = 0;
+                }
+            }
+
+            // Initialize audio
+            function initAudio() {
+                try {
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        gainNode = audioContext.createGain();
+                        gainNode.connect(audioContext.destination);
+                        gainNode.gain.value = 0;
+                        noiseBuffer = createNoiseBuffer();
+                    }
+                    
+                    stopAllAudio();
+                    
+                    switch(state.soundMode) {
+                        case 'sine':
+                        case 'triangle':
+                            oscillator = audioContext.createOscillator();
+                            oscillator.type = state.soundMode;
+                            oscillator.connect(gainNode);
+                            oscillator.start();
+                            break;
+                            
+                        case 'binaural':
+                            oscillator = audioContext.createOscillator();
+                            oscillator2 = audioContext.createOscillator();
+                            oscillator.connect(gainNode);
+                            oscillator2.connect(gainNode);
+                            oscillator.start();
+                            oscillator2.start();
+                            break;
+                            
+                        case 'harmonic':
+                            oscillator = audioContext.createOscillator();
+                            oscillator.type = 'sine';
+                            oscillator.connect(gainNode);
+                            oscillator.start();
+                            break;
+                            
+                        case 'nature':
+                            noiseSource = audioContext.createBufferSource();
+                            noiseSource.buffer = noiseBuffer;
+                            noiseSource.loop = true;
+                            const filter = audioContext.createBiquadFilter();
+                            filter.type = 'lowpass';
+                            filter.frequency.value = 500;
+                            noiseSource.connect(filter);
+                            filter.connect(gainNode);
+                            noiseSource.start();
+                            break;
+                    }
+                } catch (e) {
+                    debugLog('Audio initialization failed: ' + e.message);
+                    state.soundEnabled = false;
+                }
+            }
+
+            // Update Pomodoro timer
+            function updatePomodoro() {
+                if (!state.pomodoroRunning) return;
+                
+                state.pomodoroTime--;
+                
+                if (state.pomodoroTime <= 0) {
+                    // Phase transition
+                    if (state.pomodoroPhase === 'work') {
+                        state.pomodoroSessions++;
+                        if (state.pomodoroSessions % 4 === 0) {
+                            state.pomodoroPhase = 'longBreak';
+                            state.pomodoroTime = state.longBreakMinutes * 60;
+                        } else {
+                            state.pomodoroPhase = 'break';
+                            state.pomodoroTime = state.breakMinutes * 60;
+                        }
+                        // Play notification sound
+                        playNotification();
+                    } else {
+                        state.pomodoroPhase = 'work';
+                        state.pomodoroTime = state.workMinutes * 60;
+                    }
+                }
+                
+                // Update display
+                const minutes = Math.floor(state.pomodoroTime / 60);
+                const seconds = state.pomodoroTime % 60;
+                document.getElementById('pomodoroTimer').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update phase display
+                const phaseText = state.pomodoroPhase === 'work' ? 'Work Session' :
+                                 state.pomodoroPhase === 'break' ? 'Short Break' : 'Long Break';
+                document.querySelector('.pomodoro-phase').textContent = phaseText;
+            }
+
+            // Play notification sound
+            function playNotification() {
+                if (!audioContext) return;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = 880;
+                gain.gain.value = 0.1;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc.stop(audioContext.currentTime + 0.5);
+            }
+
+            // Update breath phase
+            function updateBreathPhase(deltaTime) {
+                const phase = state.currentPhase;
+                const pattern = state.pattern;
+                let phaseDuration;
+
+                switch(phase) {
+                    case 'inhale': phaseDuration = pattern.inhale; break;
+                    case 'hold1': phaseDuration = pattern.hold1; break;
+                    case 'exhale': phaseDuration = pattern.exhale; break;
+                    case 'hold2': phaseDuration = pattern.hold2; break;
+                    default: phaseDuration = 4;
+                }
+
+                if (phaseDuration > 0) {
+                    state.phaseProgress += deltaTime / (phaseDuration * 1000);
+                }
+
+                if (state.phaseProgress >= 1) {
+                    state.phaseProgress = 0;
+                    
+                    // Transition to next phase
+                    switch(phase) {
+                        case 'inhale':
+                            state.currentPhase = pattern.hold1 > 0 ? 'hold1' : 'exhale';
+                            break;
+                        case 'hold1':
+                            state.currentPhase = 'exhale';
+                            break;
+                        case 'exhale':
+                            state.currentPhase = pattern.hold2 > 0 ? 'hold2' : 'inhale';
+                            if (state.currentPhase === 'inhale') {
+                                state.breathCount++;
+                            }
+                            break;
+                        case 'hold2':
+                            state.currentPhase = 'inhale';
+                            state.breathCount++;
+                            break;
+                    }
+                }
+
+                // Update breath text with color
+                const breathText = document.getElementById('breathText');
+                const currentColor = phaseColors[state.currentPhase];
+                breathText.style.color = `rgb(${currentColor.rgb})`;
+                
+                switch(state.currentPhase) {
+                    case 'inhale': breathText.textContent = 'INHALE'; break;
+                    case 'hold1': 
+                    case 'hold2': breathText.textContent = 'HOLD'; break;
+                    case 'exhale': breathText.textContent = 'EXHALE'; break;
+                }
+
+                // Update peripheral indicators
+                if (state.peripheralMode) {
+                    updatePeripheralIndicators();
+                }
+
+                // Update audio
+                if (state.soundEnabled && audioContext) {
+                    try {
+                        let targetFreq, targetGain;
+                        
+                        switch(state.currentPhase) {
+                            case 'inhale':
+                                targetFreq = 220 + (state.phaseProgress * 110);
+                                targetGain = 0.1 + (state.phaseProgress * 0.05);
+                                break;
+                            case 'exhale':
+                                targetFreq = 330 - (state.phaseProgress * 110);
+                                targetGain = 0.15 - (state.phaseProgress * 0.05);
+                                break;
+                            case 'hold1':
+                            case 'hold2':
+                                targetFreq = 275;
+                                targetGain = 0.05;
+                                break;
+                        }
+                        
+                        switch(state.soundMode) {
+                            case 'sine':
+                            case 'triangle':
+                                if (oscillator) {
+                                    oscillator.frequency.exponentialRampToValueAtTime(targetFreq, audioContext.currentTime + 0.1);
+                                    gainNode.gain.linearRampToValueAtTime(targetGain, audioContext.currentTime + 0.1);
+                                }
+                                break;
+                                
+                            case 'binaural':
+                                if (oscillator && oscillator2) {
+                                    oscillator.frequency.exponentialRampToValueAtTime(targetFreq, audioContext.currentTime + 0.1);
+                                    oscillator2.frequency.exponentialRampToValueAtTime(targetFreq + 10, audioContext.currentTime + 0.1);
+                                    gainNode.gain.linearRampToValueAtTime(targetGain * 0.5, audioContext.currentTime + 0.1);
+                                }
+                                break;
+                                
+                            case 'harmonic':
+                                if (oscillator) {
+                                    const harmonic = state.currentPhase === 'inhale' ? 1 + state.phaseProgress : 
+                                                   state.currentPhase === 'exhale' ? 2 - state.phaseProgress : 1.5;
+                                    oscillator.frequency.exponentialRampToValueAtTime(110 * harmonic, audioContext.currentTime + 0.1);
+                                    gainNode.gain.linearRampToValueAtTime(targetGain, audioContext.currentTime + 0.1);
+                                }
+                                break;
+                                
+                            case 'nature':
+                                gainNode.gain.linearRampToValueAtTime(targetGain * 0.3, audioContext.currentTime + 0.1);
+                                break;
+                        }
+                    } catch (e) {
+                        debugLog('Audio update error: ' + e.message);
+                    }
+                }
+            }
+
+            // Update peripheral indicators
+            function updatePeripheralIndicators() {
+                const currentColor = phaseColors[state.currentPhase];
+                const breathing = getBreathingValue();
+                
+                // Update corner indicator
+                const peripheralMode = document.getElementById('peripheralMode');
+                peripheralMode.style.background = `radial-gradient(circle, rgba(${currentColor.rgb}, ${0.3 + breathing * 0.5}), transparent)`;
+                peripheralMode.style.transform = `scale(${0.8 + breathing * 0.4})`;
+                
+                // Update edge bars
+                const edges = ['Top', 'Bottom', 'Left', 'Right'];
+                edges.forEach(edge => {
+                    const element = document.getElementById(`peripheral${edge}`);
+                    if (state.currentPhase === 'inhale' || state.currentPhase === 'exhale') {
+                        const progress = state.currentPhase === 'inhale' ? state.phaseProgress : 1 - state.phaseProgress;
+                        if (edge === 'Top' || edge === 'Bottom') {
+                            element.style.background = `linear-gradient(to right, transparent, rgba(${currentColor.rgb}, ${0.5 + progress * 0.5}), transparent)`;
+                            element.style.height = `${3 + progress * 7}px`;
+                        } else {
+                            element.style.background = `linear-gradient(to bottom, transparent, rgba(${currentColor.rgb}, ${0.5 + progress * 0.5}), transparent)`;
+                            element.style.width = `${3 + progress * 7}px`;
+                        }
+                    } else {
+                        // Hold phases - subtle pulsing
+                        element.style.background = `rgba(${currentColor.rgb}, ${0.3 + Math.sin(Date.now() * 0.003) * 0.2})`;
+                        if (edge === 'Top' || edge === 'Bottom') {
+                            element.style.height = '5px';
+                        } else {
+                            element.style.width = '5px';
+                        }
+                    }
+                });
+            }
+
+            // Get breathing value for visualizations (0 to 1)
+            function getBreathingValue() {
+                if (state.currentPhase === 'inhale') {
+                    return state.phaseProgress;
+                } else if (state.currentPhase === 'exhale') {
+                    return 1 - state.phaseProgress;
+                } else {
+                    return state.currentPhase === 'hold1' ? 1 : 0;
+                }
+            }
+
+            // Visualization functions
+            function drawOrb() {
+                const breathing = getBreathingValue();
+                const scale = 0.5 + breathing * 0.5;
+                const radius = Math.min(width, height) * 0.15 * scale;
+                const currentColor = phaseColors[state.currentPhase];
+                
+                // Clear with fade effect
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Phase-specific motion
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                if (state.currentPhase === 'hold1' || state.currentPhase === 'hold2') {
+                    ctx.rotate(Date.now() * 0.0005);
+                }
+                
+                // Outer glow with phase color
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * 2);
+                gradient.addColorStop(0, `rgba(${currentColor.rgb}, 0.3)`);
+                gradient.addColorStop(0.5, `rgba(${currentColor.rgb}, 0.1)`);
+                gradient.addColorStop(1, 'transparent');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(-width/2, -height/2, width, height);
+                
+                // Main orb
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${currentColor.rgb}, 0.8)`;
+                ctx.fill();
+                
+                // Inner highlight
+                ctx.beginPath();
+                ctx.arc(-radius * 0.3, -radius * 0.3, radius * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fill();
+                
+                ctx.restore();
+            }
+
+            function drawWave() {
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                ctx.fillRect(0, 0, width, height);
+                
+                const breathing = getBreathingValue();
+                const currentColor = phaseColors[state.currentPhase];
+                const amplitude = height * 0.15 * (0.5 + breathing * 0.5);
+                const frequency = 0.01;
+                
+                // Phase-specific wave behavior
+                let phaseShift = 0;
+                if (state.currentPhase === 'inhale') {
+                    phaseShift = state.phaseProgress * Math.PI * 2;
+                } else if (state.currentPhase === 'exhale') {
+                    phaseShift = -state.phaseProgress * Math.PI * 2;
+                } else {
+                    phaseShift = Date.now() * 0.001; // Gentle drift during holds
+                }
+                
+                ctx.strokeStyle = `rgba(${currentColor.rgb}, 0.8)`;
+                ctx.lineWidth = 3;
+                
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    const offset = i * 0.2;
+                    const opacity = 1 - (i * 0.2);
+                    ctx.strokeStyle = `rgba(${currentColor.rgb}, ${opacity})`;
+                    
+                    for (let x = 0; x < width; x++) {
+                        const y = centerY + Math.sin((x * frequency) + phaseShift + offset) * amplitude;
+                        if (x === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            function drawParticles() {
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                ctx.fillRect(0, 0, width, height);
+                
+                const breathing = getBreathingValue();
+                const currentColor = phaseColors[state.currentPhase];
+                
+                // Phase-specific particle behavior
+                let breathForce = 0;
+                let rotationForce = 0;
+                
+                if (state.currentPhase === 'inhale') {
+                    breathForce = -breathing;
+                } else if (state.currentPhase === 'exhale') {
+                    breathForce = breathing;
+                } else {
+                    rotationForce = 0.001; // Gentle rotation during holds
+                }
+                
+                particles.forEach((particle, index) => {
+                    const dx = centerX - particle.x;
+                    const dy = centerY - particle.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist > 0) {
+                        particle.vx += (dx / dist) * breathForce * 0.5;
+                        particle.vy += (dy / dist) * breathForce * 0.5;
+                        
+                        // Add rotation during holds
+                        if (rotationForce) {
+                            const angle = Math.atan2(dy, dx) + Math.PI / 2;
+                            particle.vx += Math.cos(angle) * rotationForce * dist;
+                            particle.vy += Math.sin(angle) * rotationForce * dist;
+                        }
+                    }
+                    
+                    // Damping
+                    particle.vx *= 0.98;
+                    particle.vy *= 0.98;
+                    
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    // Wrap around
+                    if (particle.x < 0) particle.x = width;
+                    if (particle.x > width) particle.x = 0;
+                    if (particle.y < 0) particle.y = height;
+                    if (particle.y > height) particle.y = 0;
+                    
+                    // Draw with phase color
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size * (0.5 + breathing * 0.5), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${currentColor.rgb}, ${particle.opacity * (0.5 + breathing * 0.5)})`;
+                    ctx.fill();
+                });
+            }
+
+            function drawGeometric() {
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                ctx.fillRect(0, 0, width, height);
+                
+                const breathing = getBreathingValue();
+                const currentColor = phaseColors[state.currentPhase];
+                const sides = 6;
+                const baseRadius = Math.min(width, height) * 0.2;
+                const radius = baseRadius * (0.5 + breathing * 0.5);
+                
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                
+                // Phase-specific rotation
+                let rotation = 0;
+                if (state.currentPhase === 'inhale') {
+                    rotation = state.phaseProgress * Math.PI * 0.5;
+                } else if (state.currentPhase === 'exhale') {
+                    rotation = -state.phaseProgress * Math.PI * 0.5;
+                } else {
+                    rotation = Date.now() * 0.0001;
+                }
+                ctx.rotate(rotation);
+                
+                for (let layer = 0; layer < 3; layer++) {
+                    ctx.beginPath();
+                    const layerRadius = radius * (1 - layer * 0.2);
+                    const opacity = (0.8 - layer * 0.2) * (0.5 + breathing * 0.5);
+                    
+                    for (let i = 0; i <= sides; i++) {
+                        const angle = (i / sides) * Math.PI * 2;
+                        const x = Math.cos(angle) * layerRadius;
+                        const y = Math.sin(angle) * layerRadius;
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    
+                    ctx.strokeStyle = `rgba(${currentColor.rgb}, ${opacity})`;
+                    ctx.lineWidth = 3 - layer;
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+
+            function drawShader(shaderType) {
+                if (!gl || !shaderProgram) return;
+                
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                
+                const breathing = getBreathingValue();
+                const currentColor = phaseColors[state.currentPhase];
+                
+                // Set uniforms
+                const timeLocation = gl.getUniformLocation(shaderProgram, 'u_time');
+                const resolutionLocation = gl.getUniformLocation(shaderProgram, 'u_resolution');
+                const phaseLocation = gl.getUniformLocation(shaderProgram, 'u_phase');
+                const breathingLocation = gl.getUniformLocation(shaderProgram, 'u_breathing');
+                const colorLocation = gl.getUniformLocation(shaderProgram, 'u_color');
+                const phaseTypeLocation = gl.getUniformLocation(shaderProgram, 'u_phaseType');
+                
+                gl.uniform1f(timeLocation, Date.now() * 0.001);
+                gl.uniform2f(resolutionLocation, width, height);
+                gl.uniform1f(phaseLocation, state.phaseProgress);
+                gl.uniform1f(breathingLocation, breathing);
+                gl.uniform3f(colorLocation, currentColor.r, currentColor.g, currentColor.b);
+                gl.uniform1i(phaseTypeLocation, phaseTypes[state.currentPhase]);
+                
+                // Draw
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            }
+
+            // Main animation loop
+            let lastTime = 0;
+            let animationId = null;
+            
+            function animate(currentTime) {
+                if (!lastTime) lastTime = currentTime;
+                const deltaTime = currentTime - lastTime;
+                lastTime = currentTime;
+                
+                if (state.isRunning) {
+                    updateBreathPhase(deltaTime);
+                    
+                    // Draw based on mode
+                    if (state.visualMode.startsWith('shader')) {
+                        const shaderType = state.visualMode.replace('shader', '');
+                        const shaderName = ['plasma', 'ripple', 'tunnel', 'fractal'][parseInt(shaderType) - 1];
+                        
+                        if (!gl && initWebGL()) {
+                            shaderProgram = createShaderProgram(shaderSources[shaderName]);
+                            if (shaderProgram) {
+                                gl.useProgram(shaderProgram);
+                                setupWebGL();
+                            }
+                        }
+                        
+                        if (gl && shaderProgram) {
+                            drawShader(shaderName);
+                        } else {
+                            // Fallback to orb if WebGL fails
+                            drawOrb();
+                        }
+                    } else {
+                        // Make sure we're using 2D context for non-shader modes
+                        if (gl) {
+                            gl = null;
+                            shaderProgram = null;
+                            resize(); // Reinitialize canvas
+                        }
+                        
+                        switch(state.visualMode) {
+                            case 'orb': drawOrb(); break;
+                            case 'wave': drawWave(); break;
+                            case 'particles': drawParticles(); break;
+                            case 'geometric': drawGeometric(); break;
+                        }
+                    }
+                    
+                    // Update session time
+                    if (state.sessionStart) {
+                        const elapsed = Date.now() - state.sessionStart;
+                        const minutes = Math.floor(elapsed / 60000);
+                        const seconds = Math.floor((elapsed % 60000) / 1000);
+                        document.getElementById('sessionTime').textContent = 
+                            `Session: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                    
+                    // Update stats
+                    document.getElementById('breathCount').textContent = `Breaths: ${state.breathCount}`;
+                } else {
+                    // Draw idle state
+                    if (!gl) {
+                        ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                        ctx.fillRect(0, 0, width, height);
+                        
+                        // Draw a static orb when not running
+                        const radius = Math.min(width, height) * 0.1;
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(100, 150, 255, 0.3)';
+                        ctx.fill();
+                    }
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // Event handlers
+            document.getElementById('startApp').addEventListener('click', () => {
+                document.getElementById('infoPanel').style.display = 'none';
+            });
+
+            document.getElementById('startStop').addEventListener('click', () => {
+                state.isRunning = !state.isRunning;
+                const btn = document.getElementById('startStop');
+                btn.textContent = state.isRunning ? 'Stop' : 'Start';
+                
+                if (state.isRunning) {
+                    if (state.soundEnabled) initAudio();
+                    state.sessionStart = Date.now();
+                    state.breathCount = 0;
+                    state.phaseProgress = 0;
+                    state.currentPhase = 'inhale';
+                    debugLog('Session started');
+                } else {
+                    stopAllAudio();
+                    state.sessionStart = null;
+                    document.getElementById('breathText').textContent = 'READY';
+                    document.getElementById('breathText').style.color = 'rgb(224, 224, 224)';
+                    debugLog('Session stopped');
+                }
+            });
+
+            document.getElementById('patternBtn').addEventListener('click', () => {
+                currentPatternIndex = (currentPatternIndex + 1) % patterns.length;
+                state.pattern = patterns[currentPatternIndex];
+                const patternText = state.pattern.hold1 > 0 || state.pattern.hold2 > 0 ?
+                    `${state.pattern.inhale}-${state.pattern.hold1}-${state.pattern.exhale}-${state.pattern.hold2}` :
+                    `${state.pattern.inhale}-${state.pattern.exhale}`;
+                document.getElementById('currentPattern').textContent = 
+                    `Pattern: ${state.pattern.name} (${patternText})`;
+                state.phaseProgress = 0;
+                state.currentPhase = 'inhale';
+                debugLog(`Pattern changed to: ${state.pattern.name}`);
+            });
+
+            document.getElementById('soundBtn').addEventListener('click', () => {
+                state.soundEnabled = !state.soundEnabled;
+                document.getElementById('soundBtn').textContent = `Sound: ${state.soundEnabled ? 'On' : 'Off'}`;
+                if (!state.soundEnabled) {
+                    stopAllAudio();
+                } else if (state.isRunning) {
+                    initAudio();
+                }
+                debugLog(`Sound ${state.soundEnabled ? 'enabled' : 'disabled'}`);
+            });
+
+            document.getElementById('peripheralBtn').addEventListener('click', () => {
+                state.peripheralMode = !state.peripheralMode;
+                document.getElementById('peripheralMode').style.display = 
+                    state.peripheralMode ? 'block' : 'none';
+                document.getElementById('peripheralBtn').classList.toggle('active', state.peripheralMode);
+                
+                // Show/hide edge indicators
+                const edges = ['Top', 'Bottom', 'Left', 'Right'];
+                edges.forEach(edge => {
+                    const element = document.getElementById(`peripheral${edge}`);
+                    element.style.display = state.peripheralMode ? 'block' : 'none';
+                });
+                
+                debugLog(`Peripheral mode ${state.peripheralMode ? 'enabled' : 'disabled'}`);
+            });
+
+            document.getElementById('minimalBtn').addEventListener('click', () => {
+                state.minimalMode = true;
+                document.body.classList.add('minimal');
+                document.getElementById('minimalBtn').classList.add('active');
+                debugLog('Minimal mode enabled');
+            });
+
+            document.getElementById('minimalExit').addEventListener('click', () => {
+                state.minimalMode = false;
+                document.body.classList.remove('minimal');
+                document.getElementById('minimalBtn').classList.remove('active');
+                debugLog('Minimal mode disabled');
+            });
+
+            document.getElementById('pomodoroBtn').addEventListener('click', () => {
+                state.pomodoroMode = !state.pomodoroMode;
+                document.getElementById('pomodoroPanel').style.display = 
+                    state.pomodoroMode ? 'block' : 'none';
+                document.getElementById('pomodoroBtn').classList.toggle('active', state.pomodoroMode);
+            });
+
+            document.getElementById('pomodoroStart').addEventListener('click', () => {
+                state.pomodoroRunning = !state.pomodoroRunning;
+                const btn = document.getElementById('pomodoroStart');
+                btn.textContent = state.pomodoroRunning ? 'Pause' : 'Start';
+                
+                if (state.pomodoroRunning && !pomodoroInterval) {
+                    pomodoroInterval = setInterval(updatePomodoro, 1000);
+                } else {
+                    clearInterval(pomodoroInterval);
+                    pomodoroInterval = null;
+                }
+            });
+
+            // Pomodoro config handlers
+            document.getElementById('workMinutes').addEventListener('change', (e) => {
+                state.workMinutes = parseInt(e.target.value);
+                if (state.pomodoroPhase === 'work' && !state.pomodoroRunning) {
+                    state.pomodoroTime = state.workMinutes * 60;
+                    updatePomodoro();
+                }
+            });
+
+            document.getElementById('breakMinutes').addEventListener('change', (e) => {
+                state.breakMinutes = parseInt(e.target.value);
+            });
+
+            document.getElementById('longBreakMinutes').addEventListener('change', (e) => {
+                state.longBreakMinutes = parseInt(e.target.value);
+            });
+
+            document.getElementById('debugBtn').addEventListener('click', () => {
+                state.debugMode = !state.debugMode;
+                document.getElementById('debugPanel').style.display = 
+                    state.debugMode ? 'block' : 'none';
+                document.getElementById('debugBtn').classList.toggle('active', state.debugMode);
+            });
+
+            document.getElementById('testWebGL').addEventListener('click', testWebGL);
+
+            document.getElementById('clearDebug').addEventListener('click', () => {
+                document.getElementById('debugLog').innerHTML = '';
+                debugLog('Log cleared');
+            });
+
+            document.getElementById('visualMode').addEventListener('change', (e) => {
+                state.visualMode = e.target.value;
+                if (state.visualMode === 'particles') {
+                    initParticles();
+                } else if (state.visualMode.startsWith('shader')) {
+                    // Reinitialize WebGL for shader mode
+                    gl = null;
+                    shaderProgram = null;
+                }
+                debugLog(`Visual mode changed to: ${state.visualMode}`);
+            });
+
+            document.getElementById('soundMode').addEventListener('change', (e) => {
+                state.soundMode = e.target.value;
+                if (state.isRunning && state.soundEnabled) {
+                    initAudio(); // Reinitialize with new sound mode
+                }
+                debugLog(`Sound mode changed to: ${state.soundMode}`);
+            });
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        document.getElementById('startStop').click();
+                        break;
+                    case 'p':
+                        document.getElementById('patternBtn').click();
+                        break;
+                    case 's':
+                        document.getElementById('soundBtn').click();
+                        break;
+                    case 'm':
+                        if (!state.minimalMode) {
+                            document.getElementById('minimalBtn').click();
+                        } else {
+                            document.getElementById('minimalExit').click();
+                        }
+                        break;
+                    case 'Escape':
+                        if (state.minimalMode) {
+                            document.getElementById('minimalExit').click();
+                        }
+                        break;
+                }
+            });
+
+            // Initialize
+            window.addEventListener('resize', resize);
+            resize();
+            
+            // Hide loading text and show breath text
+            document.getElementById('loadingText').style.display = 'none';
+            document.getElementById('breathText').style.display = 'block';
+            
+            // Initialize pomodoro display
+            updatePomodoro();
+            
+            // Start animation loop
+            animate(0);
+            
+            debugLog('Fresh Air initialized successfully');
+        });
+    </script>
+</body>
+</html>
